@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <div id="container">
+    <iframe id="ytIframe" src="https://www.youtube.com/embed/M7lc1UVf-VE?enablejsapi=1" width="640" height="360"></iframe>
+  </div>
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script>
+    var player;
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('ytIframe', {
+        events: {
+          'onReady': function() {
+             console.log("Ready");
+             setTimeout(function() {
+               player.destroy();
+               console.log(document.getElementById('ytIframe'));
+             }, 1000);
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

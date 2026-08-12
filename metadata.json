@@ -1,0 +1,6 @@
+{
+  "name": "Ordenação Diaconal - Diocese de Assis",
+  "description": "Landing page oficial para a Solene Concelebração Eucarística de Ordenação Diaconal dos ordinandos Alison Fernando e João Henrique na Diocese de Assis - SP.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

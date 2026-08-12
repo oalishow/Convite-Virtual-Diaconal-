@@ -1,0 +1,17 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Conteúdo e configurações do site: Leitura pública, escrita permitida
+    match /siteContent/{document=**} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Orações e intenções: Leitura pública, criação pública, atualização e exclusão permitidas para moderação
+    match /prayers/{document=**} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if true;
+    }
+  }
+}

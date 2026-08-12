@@ -1,0 +1,45 @@
+{
+  "entities": {
+    "siteContent": {
+      "title": "Site Content & Settings",
+      "description": "Configurações e informações dinâmicas do site da Ordenação Diaconal",
+      "type": "object",
+      "properties": {
+        "fotoAlison": { "type": "string" },
+        "fotoJoao": { "type": "string" },
+        "brasaoDiocese": { "type": "string" },
+        "logoParoquiaAlison": { "type": "string" },
+        "logoParoquiaJoao": { "type": "string" },
+        "bispoNome": { "type": "string" },
+        "bispoTitulo": { "type": "string" },
+        "dataHorario": { "type": "string" },
+        "localNome": { "type": "string" },
+        "localEndereco": { "type": "string" },
+        "lemaGeral": { "type": "string" },
+        "lemaAlison": { "type": "string" },
+        "lemaJoao": { "type": "string" },
+        "mapsUrl": { "type": "string" },
+        "pixChave": { "type": "string" },
+        "pixNome": { "type": "string" },
+        "pixBanco": { "type": "string" },
+        "youtubeUrl": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["updatedAt"]
+    },
+    "prayers": {
+      "title": "Intenções de Oração",
+      "description": "Pedidos de oração enviados pelos fiéis com moderação local/admin",
+      "type": "object",
+      "properties": {
+        "nome": { "type": "string" },
+        "cidade": { "type": "string" },
+        "intencao": { "type": "string" },
+        "status": { "type": "string", "enum": ["approved", "pending", "rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "likes": { "type": "number" }
+      },
+      "required": ["intencao", "status", "createdAt"]
+    }
+  }
+}

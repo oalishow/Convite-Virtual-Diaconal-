@@ -1,0 +1,1746 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Convite oficial para a Solene Celebração Eucarística de Ordenação Diaconal de Alison Fernando Rodrigues dos Santos e João Henrique de Oliveira Guarsoni na Diocese de Assis - SP." />
+  <meta name="theme-color" content="#FAF8F3" />
+  <title>Ordenação Diaconal | Diocese de Assis - SP</title>
+  <script>
+    // Silencia erros conhecidos de WebSocket do Vite em ambientes controlados
+    window.addEventListener('unhandledrejection', function(event) {
+      if (event.reason && event.reason.message && event.reason.message.includes('WebSocket closed without opened')) {
+        event.preventDefault();
+      }
+    });
+  </script>
+
+
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/pwa-192x192.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+
+  <!-- Google Fonts para composição sacra eclesial -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cinzel:wght@400;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Firebase Modular SDK para Banco de Dados Firestore com Database ID Personalizado -->
+  <script type="module">
+    import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getFirestore, collection, doc, onSnapshot, setDoc, addDoc, updateDoc, deleteDoc, serverTimestamp, increment 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import {
+      getAuth, GoogleAuthProvider, FacebookAuthProvider, signInWithPopup, signOut, onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAENt-eypRlBgPzlWkTQuy6WXAB6elmU20",
+      authDomain: "ordinal-pixel-btn3v.firebaseapp.com",
+      projectId: "ordinal-pixel-btn3v",
+      storageBucket: "ordinal-pixel-btn3v.firebasestorage.app",
+      messagingSenderId: "168459629172",
+      appId: "1:168459629172:web:915f59e93566ad2e599721"
+    };
+
+    const DATABASE_ID = "ai-studio-ordenaodiaconald-6c576ff8-b39a-4065-b164-a989e9ee3edf";
+
+    try {
+      const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+      const db = getFirestore(app, DATABASE_ID);
+      const auth = getAuth(app);
+      window.firebaseDb = db;
+      window.firebaseAuth = auth;
+      window.fsMethods = {
+        collection, doc, onSnapshot, setDoc, addDoc, updateDoc, deleteDoc, serverTimestamp, increment
+      };
+      window.authMethods = {
+        GoogleAuthProvider, FacebookAuthProvider, signInWithPopup, signOut, onAuthStateChanged
+      };
+      console.log("Firestore Modular conectado com sucesso ao banco:", DATABASE_ID);
+    } catch (err) {
+      console.error("Erro ao inicializar Firestore Modular:", err);
+    }
+  </script>
+
+  <link rel="stylesheet" href="/src/style.css">
+
+    <script type="module">
+      import { registerSW } from 'virtual:pwa-register'
+      
+      const updateSW = registerSW({
+        onNeedRefresh() {
+          if (confirm('Nova atualização disponível. Recarregar?')) {
+            updateSW(true)
+          }
+        },
+        onOfflineReady() {
+          console.log('App pronto para funcionar offline.')
+        },
+      })
+    </script>
+  <link rel="manifest" href="/manifest.webmanifest">
+</head>
+<body>
+
+  <!-- SPLASH SCREEN ANIMATION -->
+  <div id="splashScreen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-surface); z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1rem; text-align: center; transition: opacity 0.8s ease, visibility 0.8s ease;">
+    <div class="splash-logo" style="animation: pulseLogo 2s ease-in-out infinite;">
+      <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="var(--gold-dark)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2v20M8 7h8"></path>
+      </svg>
+    </div>
+    <h3 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.95rem; font-weight: 600; color: var(--text-muted); margin-top: 1.25rem; opacity: 0; animation: fadeUpText 1s ease forwards 0.3s; text-transform: uppercase; letter-spacing: 0.08em;">Seja Bem-vindo ao Convite Virtual da</h3>
+    <h2 style="font-family: 'Cinzel', serif; font-size: 1.6rem; color: var(--gold-dark); margin-top: 0.4rem; letter-spacing: 0.1em; opacity: 0; animation: fadeUpText 1s ease forwards 0.5s;">Ordenação Diaconal</h2>
+  </div>
+
+  <link rel="stylesheet" href="/src/style.css">
+
+  <script type="module" src="/src/app.js"></script>
+
+  <!-- Link de Acessibilidade -->
+  <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
+
+  <!-- ==========================================================================
+       1. CABEÇALHO FIXO E DISCRETO
+       ========================================================================== -->
+  <header class="site-header">
+    <div class="container header-container">
+      
+      <!-- Área Reservada para o Brasão da Diocese de Assis -->
+      <a href="https://www.instagram.com/diocesedeassis/" target="_blank" rel="noopener noreferrer" class="diocese-brand" aria-label="Ir para o Instagram da Diocese de Assis">
+        
+        <div id="headerBrasaoContainer">
+          <div class="coat-placeholder" title="Espaço reservado para o Brasão da Diocese de Assis">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/>
+              <path d="M12 6v10M8 10h8"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="diocese-text-group">
+          <span class="diocese-title">Diocese de Assis</span>
+          <span class="diocese-sub">Ordenação Diaconal</span>
+        </div>
+      </a>
+
+      <!-- Botão Hambúrguer para Mobile -->
+      <button class="menu-toggle-btn" id="menuToggleBtn" aria-label="Abrir menu de navegação" aria-expanded="false" aria-controls="navMenu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+
+      <!-- Menu Principal de Navegação por Âncoras -->
+      <nav>
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="#hero" class="nav-link active">Celebração</a></li>
+          <li><a href="#ordenandos" class="nav-link">Ordenandos</a></li>
+          <li><a href="#informacoes" class="nav-link">Informações</a></li>
+          <li><a href="#localizacao" class="nav-link">Localização</a></li>
+          <li><a href="#oracoes" class="nav-link">Orações</a></li>
+          <li><a href="#materiais" class="nav-link">Materiais</a></li>
+          <li><a href="#apoio" class="nav-link">Apoio Fraterno</a></li>
+          <li>
+            <button class="header-music-btn" id="headerMusicBtn" onclick="toggleYtEmbedBox()" title="Abrir Reprodutor de Música">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 18V5l12-2v13"></path>
+                <circle cx="6" cy="18" r="3"></circle>
+                <circle cx="18" cy="16" r="3"></circle>
+              </svg>
+              <span id="headerMusicLabel">Música Sacra</span>
+            </button>
+          </li>
+          <li>
+            <button class="btn-cal-header" onclick="downloadCalendarEvent()" title="Salvar evento no seu calendário do celular ou computador">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              Adicionar ao calendário
+            </button>
+          </li>
+          <li>
+            <button onclick="openAdminModal()" class="header-music-btn" style="background:var(--gold-soft); color:var(--gold-dark); border-color:var(--gold-border);" title="Acessar Área Administrativa do Ordenante">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <span>🔒 Admin</span>
+            </button>
+          </li>
+        </ul>
+      </nav>
+
+    </div>
+  </header>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <main id="main-content">
+
+    <!-- ==========================================================================
+         2. SEÇÃO PRINCIPAL (HERO)
+         ========================================================================== -->
+    <section id="hero" class="hero-section">
+      <div class="container">
+        
+        <div class="hero-kicker-badge">
+          <!-- Ícone Ano Jubilar -->
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 6v12M6 12h12"/>
+          </svg>
+          Diocese de Assis • Ano Jubilar de São Francisco
+        </div>
+
+        <div class="hero-bg-vitral" id="heroBgVitral"></div>
+
+        <div class="hero-logo-box" id="heroLogoContainer">
+          <h1 style="margin: 0; padding: 0; display: inline-block; width: 100%; text-align: center;" aria-label="Ordenação Diaconal">
+            <img src="/images/image-1.png" alt="Logo Oficial da Ordenação Diaconal" class="hero-logo-img" id="mainOrdenacaoLogoImg" />
+          </h1>
+        </div>
+
+        <!-- Nomes dos Ordenandos -->
+        <div class="hero-names-wrapper">
+          <h2 class="hero-ordinand-fullname">Alison Fernando Rodrigues dos Santos</h2>
+          <span style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.25rem; color: var(--gold-primary);">&</span>
+          <h2 class="hero-ordinand-fullname">João Henrique de Oliveira Guarsoni</h2>
+        </div>
+
+        <!-- Data, Horário e Local -->
+        <div class="hero-meta-box">
+          <div class="hero-meta-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <span id="heroMetaData">19 de novembro de 2026 • 19h</span>
+          </div>
+
+          <div class="hero-meta-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            <span id="heroMetaLocal">Paróquia Santa Cecília • Assis–SP</span>
+          </div>
+        </div>
+
+        <!-- Contador Regressivo para a Solenidade -->
+        <div class="hero-countdown-box" id="heroCountdownBox">
+          <div class="hero-countdown-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span>Faltam para a Solenidade Diaconal</span>
+          </div>
+          <div class="hero-countdown-timer">
+            <div class="countdown-unit">
+              <span class="countdown-value" id="cdDays">00</span>
+              <span class="countdown-label">Dias</span>
+            </div>
+            <div class="countdown-separator">:</div>
+            <div class="countdown-unit">
+              <span class="countdown-value" id="cdHours">00</span>
+              <span class="countdown-label">Horas</span>
+            </div>
+            <div class="countdown-separator">:</div>
+            <div class="countdown-unit">
+              <span class="countdown-value" id="cdMinutes">00</span>
+              <span class="countdown-label">Minutos</span>
+            </div>
+            <div class="countdown-separator">:</div>
+            <div class="countdown-unit">
+              <span class="countdown-value" id="cdSeconds">00</span>
+              <span class="countdown-label">Segundos</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botões de Ação Hero -->
+        <div class="hero-buttons-group">
+          <a href="#localizacao" class="btn-primary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+            </svg>
+            Ver localização
+          </a>
+
+          <button id="btnShareInvite" class="btn-secondary" onclick="shareInvitation()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+            Compartilhar convite
+          </button>
+        </div>
+
+        <!-- Scroll Down Indicator -->
+        <a href="#ordenandos" class="scroll-indicator-container" aria-label="Rolar para mais conteúdo">
+          <span class="scroll-indicator-text">Descubra mais</span>
+          <div class="scroll-arrow">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         3. TEXTO-CONVITE SOLENE
+         ========================================================================== -->
+    <section class="section-spacing fade-in-section">
+      <div class="container">
+        
+        <div class="invite-box-container ornate-card">
+          <div class="ornate-corner ornate-top-left"></div>
+          <div class="ornate-corner ornate-top-right"></div>
+          <div class="ornate-corner ornate-bottom-left"></div>
+          <div class="ornate-corner ornate-bottom-right"></div>
+
+          <h2 class="invite-salutation">Com alegria, convidamos você</h2>
+
+          <div class="sacred-divider" aria-hidden="true">
+            <div class="sacred-divider-icon">
+              <!-- Tau de São Francisco -->
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M4 4h16v3h-6.5v13h-3V7H4V4z"/>
+              </svg>
+            </div>
+          </div>
+
+          <p class="invite-text-body">
+            Nas alegrias do Ano Jubilar de São Francisco, a Diocese de Assis, nossos familiares e nós temos a alegria de convidar Vossa Senhoria para a Solene Celebração Eucarística na qual seremos ordenados Diáconos pela imposição das mãos e oração consecratória de Dom Argemiro de Azevedo, CMF, Bispo Diocesano de Assis.
+          </p>
+
+          <div class="bishop-signature-box" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+            <div id="bishopImagesContainer" style="display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: center; margin-bottom: 1rem;">
+              <div id="bishopPhotoContainer" class="ordinand-card-photo-frame" style="display: none; background: linear-gradient(135deg, var(--bg-parchment) 0%, #EAE2D2 100%);">
+                <!-- Foto do bispo será injetada aqui -->
+              </div>
+              <div id="bishopCoatContainer" style="width: 180px; height: 180px; display: none; align-items: center; justify-content: center; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
+                <!-- Brasão do bispo será injetado aqui -->
+              </div>
+            </div>
+            <p class="bishop-title">Dom Argemiro de Azevedo, CMF</p>
+            <p class="bishop-sub">Bispo Diocesano de Assis</p>
+          </div>
+        </div>
+
+        <!-- Scroll Down Indicator -->
+        <a href="#ordenandos" class="scroll-indicator-container" aria-label="Rolar para mais conteúdo">
+          <span class="scroll-indicator-text">Descubra mais</span>
+          <div class="scroll-arrow">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         4. OS ORDENANDOS
+         ========================================================================== -->
+    <section id="ordenandos" class="section-spacing fade-in-section" style="background-color: var(--bg-parchment-light); border-top: 1px solid var(--gold-border); border-bottom: 1px solid var(--gold-border);">
+      <div class="container">
+        
+        <div class="section-header">
+          <span class="section-kicker">Chamados ao Serviço de Deus e da Igreja</span>
+          <h2 class="section-title">Os Ordenandos</h2>
+          <p class="section-subtitle">Conheça os dois futuros diáconos que darão o seu sim definitivo ao serviço do altar e da caridade.</p>
+        </div>
+
+        <div class="ordenandos-grid">
+          <!-- CARTÃO 1: ALISON FERNANDO -->
+          <article class="ordinand-profile-card">
+            
+            <div class="ordinand-card-photo-frame" id="cardFotoAlisonContainer" style="padding: 0; overflow: hidden; background: linear-gradient(135deg, var(--bg-parchment) 0%, #EAE2D2 100%);">
+            </div>
+
+            <h3 class="ordinand-card-name">Alison Fernando Rodrigues dos Santos</h3>
+            <div style="margin-bottom: 1rem;">
+              <a href="https://www.instagram.com/oalison.rodrigues/" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:0.4rem; font-size:0.85rem; color:var(--gold-dark); text-decoration:none; font-weight:600;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                </svg>
+                @oalison.rodrigues
+              </a>
+            </div>
+
+            <div class="motto-banner">
+              <p class="motto-quote">"Alegrai-vos sempre no Senhor! Repito: alegrai-vos!"</p>
+              <span class="motto-ref">(Fl 4,4)</span>
+            </div>
+
+            <div class="parish-info">
+              <a href="https://www.instagram.com/paroquiadelutecia/" target="_blank" rel="noopener noreferrer" id="parishLogoAlisonContainer" style="display:inline-flex; align-items:center; color:inherit; text-decoration:none;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-4a3 3 0 0 1 6 0v4"/>
+                </svg>
+              </a>
+              <span>Paróquia de origem: 
+                <a href="https://www.instagram.com/paroquiadelutecia/" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none; border-bottom: 1px dotted var(--gold-border); transition: color 0.3s ease;" onmouseover="this.style.color='var(--gold-primary)'" onmouseout="this.style.color='inherit'">
+                  <strong id="parishTextAlison">Paróquia Nossa Senhora da Boa Esperança — Lutécia–SP</strong>
+                </a>
+              </span>
+            </div>
+
+            <details class="history-details">
+              <summary>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="16"></line>
+                  <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+                Conheça a História
+              </summary>
+              <div class="history-content">
+                Um resumo da caminhada vocacional, experiências pastorais e vivência comunitária na preparação para o Sacramento da Ordem no grau do Diaconato. (Edite este texto pelo painel de controle futuramente, ou diretamente no código).
+              </div>
+            </details>
+
+          </article>
+
+          <!-- CARTÃO 2: JOÃO HENRIQUE -->
+          <article class="ordinand-profile-card">
+            
+            <div class="ordinand-card-photo-frame" id="cardFotoJoaoContainer" style="padding: 0; overflow: hidden; background: linear-gradient(135deg, var(--bg-parchment) 0%, #EAE2D2 100%);">
+            </div>
+
+            <h3 class="ordinand-card-name">João Henrique de Oliveira Guarsoni</h3>
+            <div style="margin-bottom: 1rem;">
+              <a href="https://www.instagram.com/joao_guarsoni/" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:0.4rem; font-size:0.85rem; color:var(--gold-dark); text-decoration:none; font-weight:600;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                </svg>
+                @joao_guarsoni
+              </a>
+            </div>
+
+            <div class="motto-banner">
+              <p class="motto-quote">"Eis-me aqui"</p>
+              <span class="motto-ref">(Is 6,8)</span>
+            </div>
+
+            <div class="parish-info">
+              <a href="https://www.instagram.com/santo_antonio_palmital" target="_blank" rel="noopener noreferrer" id="parishLogoJoaoContainer" style="display:inline-flex; align-items:center; color:inherit; text-decoration:none;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-4a3 3 0 0 1 6 0v4"/>
+                </svg>
+              </a>
+              <span>Paróquia de origem: 
+                <a href="https://www.instagram.com/santo_antonio_palmital" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none; border-bottom: 1px dotted var(--gold-border); transition: color 0.3s ease;" onmouseover="this.style.color='var(--gold-primary)'" onmouseout="this.style.color='inherit'">
+                  <strong id="parishTextJoao">Paróquia Santo Antônio — Palmital–SP</strong>
+                </a>
+              </span>
+            </div>
+
+            <details class="history-details">
+              <summary>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="16"></line>
+                  <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+                Conheça a História
+              </summary>
+              <div class="history-content">
+                Um resumo da caminhada vocacional, experiências pastorais e vivência comunitária na preparação para o Sacramento da Ordem no grau do Diaconato. (Edite este texto pelo painel de controle futuramente, ou diretamente no código).
+              </div>
+            </details>
+
+          </article>
+
+        </div>
+
+        <!-- Scroll Down Indicator -->
+        <a href="#informacoes" class="scroll-indicator-container" aria-label="Rolar para mais conteúdo">
+          <span class="scroll-indicator-text">Descubra mais</span>
+          <div class="scroll-arrow">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         5. INFORMAÇÕES DA CELEBRAÇÃO
+         ========================================================================== -->
+    <section id="informacoes" class="section-spacing fade-in-section">
+      <div class="container">
+        
+        <div class="section-header">
+          <span class="section-kicker">Liturgia Solene</span>
+          <h2 class="section-title">Informações da Celebração</h2>
+          <p class="section-subtitle">Confira os detalhes sobre a data, horário, local da celebração e presidência litúrgica.</p>
+        </div>
+
+                <div id="emBreveMessage" style="display: none; text-align: center; padding: 3rem; background: var(--bg-parchment-light); border: 1px dashed var(--gold-border); border-radius: 12px; margin-bottom: 2rem;">
+          <h3 style="font-family: 'Cinzel', serif; color: var(--gold-dark); font-size: 1.5rem; margin-bottom: 0.5rem;">Em Breve Mais Informações</h3>
+          <p style="color: var(--text-muted); font-size: 1rem;">Aguarde as definições oficiais de data e local para a Solene Celebração Eucarística.</p>
+        </div>
+
+        <div class="info-cards-grid" id="infoGridContainer">
+          
+          <!-- Data -->
+          <div class="info-card" id="infoCardData">
+            <div class="info-card-icon">
+              <!-- Ícone SVG Dourado Acessível: Calendário -->
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+            </div>
+            <div class="info-card-body">
+              <h3>Data</h3>
+              <p><strong id="infoTextData">19 de Novembro de 2026</strong></p>
+            </div>
+          </div>
+
+          <!-- Horário -->
+          <div class="info-card" id="infoCardHorario">
+            <div class="info-card-icon">
+              <!-- Ícone SVG Dourado Acessível: Relógio -->
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+            <div class="info-card-body">
+              <h3>Horário</h3>
+              <p><strong id="infoTextHorario">19h (Dezenove horas)</strong></p>
+            </div>
+          </div>
+
+          <!-- Local e Cidade -->
+          <div class="info-card" id="infoCardLocal">
+            <div class="info-card-icon">
+              <!-- Ícone SVG Dourado Acessível: Igreja / Local -->
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-4a3 3 0 0 1 6 0v4"/>
+              </svg>
+            </div>
+            <div class="info-card-body">
+              <h3>Local e Cidade</h3>
+              <p id="localCidadeText"><strong>Paróquia Santa Cecília</strong><br>Assis–SP</p>
+            </div>
+          </div>
+
+          <!-- Presidência -->
+          <div class="info-card">
+            <div class="info-card-icon" id="presidenciaIconContainer" style="overflow: hidden; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+              <!-- Ícone SVG Dourado Acessível: Mitra / Presidência -->
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" id="presidenciaDefaultIcon">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+              </svg>
+            </div>
+            <div class="info-card-body">
+              <h3>Presidência Litúrgica</h3>
+              <p>
+                <a href="https://www.diocesedeassis.org/bispo-diocesano" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none; transition: color 0.3s ease;" onmouseover="this.style.color='var(--gold-primary)'" onmouseout="this.style.color='inherit'">
+                  <strong class="bishop-title" style="border-bottom: 1px dotted var(--gold-border);">Dom Argemiro de Azevedo, CMF</strong>
+                </a><br>
+                <span class="bishop-sub">Bispo Diocesano de Assis</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Playlist da Celebração -->
+          <div class="info-card" id="infoCardPlaylist" style="position: relative;">
+            <div class="info-card-icon">
+              <!-- Ícone SVG Dourado Acessível: Fones de ouvido / Música -->
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+                <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
+              </svg>
+            </div>
+            <div class="info-card-body">
+              <h3>Playlist da Celebração</h3>
+              <p><span style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 0.4rem;">Ouça as músicas que farão parte do rito de ordenação.</span>
+                <a id="btnLinkPlaylistOrdenacao" href="#" target="_blank" style="display:none; color:var(--gold-dark); font-weight:700; text-decoration:underline; font-family:'Plus Jakarta Sans', sans-serif; margin-top:0.3rem; align-items:center; gap:0.3rem;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                  Acessar Playlist Oficial
+                </a>
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="diaconate-explanation" style="max-width: 800px; margin: 3rem auto 2.5rem; background: var(--bg-surface); border: 1px solid var(--gold-border); border-radius: var(--radius-md); padding: 2.5rem 2rem; box-shadow: var(--shadow-subtle); text-align: center;">
+          <div style="display: flex; justify-content: center; margin-bottom: 1.5rem;">
+            <img id="jesusLavaPesImg" src="" alt="Jesus Lava os Pés" style="width: 240px; height: auto; filter: drop-shadow(0 4px 8px rgba(112, 87, 33, 0.15)); display: none;" />
+          </div>
+          <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--gold-dark); margin-bottom: 1.25rem;">O Ministério Diaconal</h3>
+          <p style="font-size: 1.05rem; color: var(--text-main); line-height: 1.7; margin-bottom: 1.25rem; text-align: justify;">
+            O diaconato é o primeiro grau do sacramento da Ordem na Igreja Católica. A palavra <em>diácono</em> provém do grego <em>diakonos</em>, que significa "servidor". Os diáconos são ordenados para o ministério do serviço, dedicando-se à caridade, ao anúncio da Palavra e à assistência na Liturgia, configurando-se ao Cristo Servidor.
+          </p>
+          <p style="font-size: 1.05rem; color: var(--text-main); line-height: 1.7; margin-bottom: 1.25rem; text-align: justify;">
+            A Igreja confere essa ordem em duas modalidades. O <strong>Diaconato Permanente</strong> é exercido em caráter definitivo, podendo ser conferido a homens casados, que se dedicam ao serviço pastoral conciliando com sua vida familiar e profissional. Já o <strong>Diaconato Transitório</strong> é concedido àqueles que almejam o sacerdócio. Este é o caso de Alison e João Henrique: após este período de fecundo serviço diaconal, eles darão o passo definitivo rumo à ordenação presbiteral, entregando suas vidas inteiramente a Deus e à Igreja.
+          </p>
+          <p style="font-size: 1.05rem; color: var(--text-main); line-height: 1.7; font-style: italic; color: var(--text-muted);">
+            "Fortalecidos com a graça sacramental, servem o Povo de Deus, em união com o Bispo e o seu presbitério, na diaconia da liturgia, da palavra e da caridade."<br>
+            <span style="display: block; margin-top: 0.5rem; font-size: 0.9rem; font-family: 'Plus Jakarta Sans', sans-serif; font-style: normal; font-weight: 600; color: var(--gold-dark);">— Concílio Vaticano II, Constituição Dogmática Lumen Gentium, n. 29</span>
+          </p>
+        </div>
+
+        <div class="calendar-action-box">
+          <h3 style="font-family: 'Cinzel', serif; font-size: 1.2rem; color: var(--text-main); margin-bottom: 0.5rem;">Deseja salvar esta celebração no seu calendário?</h3>
+          <p style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.92rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+            Baixe o arquivo de evento (.ics) para adicionar automaticamente a data e o horário na agenda do seu smartphone ou computador.
+          </p>
+          <button class="btn-primary" onclick="downloadCalendarEvent()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            Adicionar ao meu calendário
+          </button>
+        </div>
+
+        <!-- Scroll Down Indicator -->
+        <a href="#localizacao" class="scroll-indicator-container" aria-label="Rolar para mais conteúdo">
+          <span class="scroll-indicator-text">Descubra mais</span>
+          <div class="scroll-arrow">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         6. LOCALIZAÇÃO
+         ========================================================================== -->
+    <section id="localizacao" class="section-spacing fade-in-section" style="background-color: var(--bg-parchment-light); border-top: 1px solid var(--gold-border); border-bottom: 1px solid var(--gold-border);">
+      <div class="container">
+        
+        <div class="section-header">
+          <span class="section-kicker">Guia do Convidado</span>
+          <h2 class="section-title">Onde será a celebração</h2>
+          <p class="section-subtitle">Local da matriz paroquial que acolherá a Solene Concelebração Eucarística.</p>
+        </div>
+
+        <div class="location-box">
+          <div class="location-details">
+            <span class="section-kicker" style="margin-bottom: 0.2rem;">Templo Paroquial</span>
+            <h3 class="location-title-main">Paróquia Santa Cecília, Assis–SP</h3>
+            <p class="location-address-text">
+              Paróquia Santa Cecília, Assis–SP.<br>
+              Um espaço sagrado acolhedor preparado para receber a comunidade diocesana, sacerdotes, religiosos e fiéis de todas as paróquias.
+            </p>
+
+            <div class="location-actions">
+              <button class="btn-primary" onclick="openGoogleMapsRoute()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+                </svg>
+                Abrir rota no Google Maps
+              </button>
+
+              <button class="btn-secondary" onclick="copyAddressText()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                Copiar endereço
+              </button>
+            </div>
+          </div>
+
+          <!-- Card do Mapa com Embed Interativo do Google Maps -->
+          <div id="mapContainer" style="position: relative; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--gold-border); box-shadow: var(--shadow-card); min-height: 300px; background: var(--bg-surface);">
+            <iframe 
+              id="mapsIframe"
+              src="https://maps.google.com/maps?q=Par%C3%B3quia%20Santa%20Cec%C3%ADlia%20Assis%20SP&t=&z=16&ie=UTF8&iwloc=&output=embed" 
+              width="100%" 
+              height="100%" 
+              style="border:0; min-height: 300px; width: 100%; display: block;" 
+              allowfullscreen="" 
+              loading="lazy" 
+              referrerpolicy="no-referrer-when-downgrade"
+              title="Mapa da Paróquia Santa Cecília em Assis SP">
+            </iframe>
+            <div style="position: absolute; bottom: 12px; right: 12px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(4px); padding: 8px 14px; border-radius: var(--radius-sm); border: 1px solid var(--gold-border); box-shadow: 0 2px 10px rgba(0,0,0,0.15);">
+              <a id="mapsAppLink" href="https://maps.app.goo.gl/aLfresPMqYEcBAD76" target="_blank" rel="noopener noreferrer" style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.8rem; font-weight: 700; color: var(--gold-dark); text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                <span>Abrir App do Google Maps</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scroll Down Indicator -->
+        <a href="#oracoes" class="scroll-indicator-container" aria-label="Rolar para mais conteúdo">
+          <span class="scroll-indicator-text">Descubra mais</span>
+          <div class="scroll-arrow">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         7. MURAL DE ORAÇÕES E MENSAGENS
+         ========================================================================== -->
+    <section id="oracoes" class="section-spacing fade-in-section">
+      <div class="container">
+        
+        <div class="section-header">
+          <span class="section-kicker">Fraternidade e Oração</span>
+          <h2 class="section-title">Una-se a nós em oração</h2>
+          <p class="section-subtitle">Pedimos a sua oração por Alison e João Henrique, por suas famílias e por todas as vocações da Igreja. Se desejar, deixe uma intenção; ela será acolhida com gratidão.</p>
+        </div>
+
+        <div class="prayers-grid-layout">
+          
+          <!-- Formulário -->
+          <div class="prayer-form-card">
+            <h3 style="font-family: 'Cinzel', serif; font-size: 1.15rem; color: var(--gold-dark); margin-bottom: 1.25rem;">Deixe sua mensagem ou intenção de oração</h3>
+            
+            <div id="authContainer" style="margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem;">
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">(Opcional) Faça login para mostrar sua foto junto à intenção:</p>
+              <div style="display: flex; gap: 0.5rem;">
+                <button type="button" onclick="loginWithGoogle()" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: white; border: 1px solid #ccc; padding: 0.5rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; color: #444;">
+                  <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Google
+                </button>
+                <button type="button" onclick="loginWithFacebook()" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: #1877F2; border: 1px solid #1877F2; padding: 0.5rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; color: white;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> Facebook
+                </button>
+              </div>
+            </div>
+            
+            <div id="loggedInContainer" style="margin-bottom: 1.5rem; display: none; align-items: center; gap: 1rem; background: var(--bg-parchment-light); padding: 0.75rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.05);">
+              <img id="userPhoto" src="" alt="Sua Foto" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold-soft);" />
+              <div style="flex: 1;">
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Conectado como</p>
+                <p id="userName" style="font-weight: 600; font-size: 0.95rem; color: var(--text-dark); margin: 0;"></p>
+              </div>
+              <button type="button" onclick="logoutSocial()" style="background: transparent; border: 1px solid var(--gold-soft); color: var(--gold-dark); padding: 0.35rem 0.75rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer;">Sair</button>
+            </div>
+
+            <form id="prayerForm" onsubmit="handlePrayerSubmit(event)">
+              <div class="form-group">
+                <label class="form-label" for="msgAuthor">Como deseja ser identificado?</label>
+                <input type="text" id="msgAuthor" class="form-input" placeholder="Ex.: Um fiel, Família Silva ou Anônimo" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="msgLocation">Paróquia / Comunidade e Cidade (Opcional)</label>
+                <input type="text" id="msgLocation" class="form-input" placeholder="Ex.: Paróquia São José - Assis, SP" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="msgText">Deixe sua mensagem ou sua intenção de oração *</label>
+                <textarea id="msgText" class="form-textarea" rows="4" placeholder="Escreva aqui sua mensagem ou intenção..." maxlength="500" required oninput="updateCharCounter()"></textarea>
+                <div style="display: flex; justify-content: flex-end; font-size: 0.78rem; color: var(--text-muted); margin-top: 0.35rem;" id="charCounter">0 / 500 caracteres</div>
+              </div>
+
+              <div class="form-group" style="margin-top: 1rem;">
+                <label style="display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.85rem; color: var(--text-muted); cursor: pointer; line-height: 1.45;">
+                  <input type="checkbox" id="msgConsent" required style="margin-top: 0.15rem; accent-color: var(--gold-dark); width: 16px; height: 16px;" />
+                  <span>Autorizo a publicação desta intenção, após moderação. *</span>
+                </label>
+              </div>
+
+              <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 1.25rem;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="22" y1="2" x2="11" y2="13"></line>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+                Enviar intenção
+              </button>
+            </form>
+          </div>
+
+          <!-- Feed de Intenções Aprovadas -->
+          <div>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+              <h3 style="font-family: 'Cinzel', serif; font-size: 1.15rem; color: var(--text-main); margin: 0;">Mensagens e Orações</h3>
+              <div style="display: flex; gap: 0.5rem;">
+                <button id="btnFilterRecentes" onclick="setPublicPrayersFilter('recentes')" style="background: var(--gold-soft); border: 1px solid var(--gold-border); padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; color: var(--gold-dark); font-weight: 600;">Recentes</button>
+                <button id="btnFilterRelevantes" onclick="setPublicPrayersFilter('relevantes')" style="background: transparent; border: 1px solid var(--gold-border); padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; color: var(--text-muted); font-weight: 600;">Mais Amados</button>
+              </div>
+            </div>
+
+            <div class="prayers-feed-wrapper" id="prayersFeed" style="max-height: 500px; overflow-y: auto; scroll-behavior: smooth; position: relative;">
+              <!-- Intenções aprovadas renderizadas dinamicamente via JavaScript -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Área de Moderação Local (visível apenas quando ADMIN_MODE = true) -->
+        <div id="adminModerationSection" style="display: none; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 2px dashed var(--gold-border);">
+          <div style="background: var(--bg-surface); border: 1px solid var(--gold-border); border-radius: var(--radius-sm); padding: 1.25rem;">
+            <h3 style="font-family: 'Cinzel', serif; font-size: 1.05rem; color: #8B0000; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem;">
+              🔒 Moderação Local de Intenções (Modo Administrador)
+            </h3>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1rem;">
+              Listagem de intenções pendentes enviadas pelos fiéis aguardando moderação. Apenas as aprovadas aparecem no mural público.
+            </p>
+            <div id="pendingPrayersFeed" style="display: flex; flex-direction: column; gap: 0.75rem;">
+              <!-- Intenções pendentes renderizadas via JS quando ADMIN_MODE = true -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Scroll Down Indicator -->
+        <a href="#materiais" class="scroll-indicator-container" aria-label="Rolar para mais conteúdo">
+          <span class="scroll-indicator-text">Descubra mais</span>
+          <div class="scroll-arrow">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         MATERIAIS E DOWNLOADS
+         ========================================================================== -->
+    <section id="materiais" class="section-spacing fade-in-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-kicker">Materiais de Apoio</span>
+          <h2 class="section-title">Downloads</h2>
+          <p class="section-subtitle">Tenha acesso aos materiais litúrgicos e subsídios vocacionais da ordenação.</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; max-width: 1000px; margin: 0 auto;">
+          <a href="#" class="info-card" id="linkMaterialLivreto" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; position: relative; transition: all 0.3s ease;">
+            <div class="info-card-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+            </div>
+            <div class="info-card-body" style="flex: 1; display: flex; flex-direction: column;">
+              <h3>Livreto da Missa</h3>
+              <p style="margin-bottom: 0.75rem;">Baixe o roteiro litúrgico da celebração em PDF.</p>
+              <div style="margin-top: auto;">
+                <span id="statusLivreto" style="display: inline-block; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.75rem; font-weight: 700; background: var(--gold-soft); color: var(--gold-dark);">Disponível em breve</span>
+              </div>
+            </div>
+          </a>
+
+          <a href="#" class="info-card" id="linkMaterialConvite" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; position: relative; transition: all 0.3s ease;">
+            <div class="info-card-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+            </div>
+            <div class="info-card-body" style="flex: 1; display: flex; flex-direction: column;">
+              <h3>Convite Oficial</h3>
+              <p style="margin-bottom: 0.75rem;">Baixe a imagem oficial do convite para compartilhar.</p>
+              <div style="margin-top: auto;">
+                <span id="statusConvite" style="display: inline-block; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.75rem; font-weight: 700; background: var(--gold-soft); color: var(--gold-dark);">Disponível em breve</span>
+              </div>
+            </div>
+          </a>
+
+          <div class="info-card" style="display: flex; flex-direction: column; position: relative; transition: all 0.3s ease; text-decoration: none; color: inherit;">
+            <div class="info-card-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+            </div>
+            <div class="info-card-body" style="flex: 1; display: flex; flex-direction: column;">
+              <h3>Postagens Oficiais</h3>
+              <p style="margin-bottom: 0.75rem;">Formatos para você compartilhar nas redes sociais.</p>
+              
+              <div style="margin-top: auto; display: flex; flex-direction: column; gap: 0.5rem;">
+                <a href="#" id="linkMaterialWhatsapp" style="display: flex; align-items: center; justify-content: space-between; padding: 0.4rem 0.75rem; border-radius: 4px; border: 1px solid var(--gold-border); text-decoration: none; color: var(--text-main); font-size: 0.8rem; font-weight: 500; transition: all 0.2s ease;" class="hover-bg-gold">
+                  <span style="display: flex; align-items: center; gap: 0.4rem;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                    WhatsApp
+                  </span>
+                  <span id="statusWhatsapp" style="font-size: 0.7rem; font-weight: 700; color: var(--text-muted);">Em breve</span>
+                </a>
+                <a href="#" id="linkMaterialInstagram" style="display: flex; align-items: center; justify-content: space-between; padding: 0.4rem 0.75rem; border-radius: 4px; border: 1px solid var(--gold-border); text-decoration: none; color: var(--text-main); font-size: 0.8rem; font-weight: 500; transition: all 0.2s ease;" class="hover-bg-gold">
+                  <span style="display: flex; align-items: center; gap: 0.4rem;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                    Instagram
+                  </span>
+                  <span id="statusInstagram" style="font-size: 0.7rem; font-weight: 700; color: var(--text-muted);">Em breve</span>
+                </a>
+                <a href="#" id="linkMaterialFacebook" style="display: flex; align-items: center; justify-content: space-between; padding: 0.4rem 0.75rem; border-radius: 4px; border: 1px solid var(--gold-border); text-decoration: none; color: var(--text-main); font-size: 0.8rem; font-weight: 500; transition: all 0.2s ease;" class="hover-bg-gold">
+                  <span style="display: flex; align-items: center; gap: 0.4rem;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3.81l.19-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                    Facebook
+                  </span>
+                  <span id="statusFacebook" style="font-size: 0.7rem; font-weight: 700; color: var(--text-muted);">Em breve</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scroll Down Indicator -->
+        <a href="#apoio" class="scroll-indicator-container" aria-label="Rolar para mais conteúdo">
+          <span class="scroll-indicator-text">Descubra mais</span>
+          <div class="scroll-arrow">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         8. APOIO FRATERNO À ORDENAÇÃO (PIX)
+         ========================================================================== -->
+    <section id="apoio" class="section-spacing fade-in-section" style="background-color: var(--bg-parchment-light); border-top: 1px solid var(--gold-border); border-bottom: 1px solid var(--gold-border);">
+      <div class="container">
+        
+        <div class="section-header">
+          <span class="section-kicker">Gesto de Carinho e Comunhão</span>
+          <h2 class="section-title">Apoio fraterno à ordenação</h2>
+          <p class="section-subtitle">
+            A Ordenação Diaconal é uma grande graça de Deus e conta com a generosidade de muitas pessoas. Aqueles que desejarem colaborar livremente com os preparativos e despesas deste momento poderão fazê-lo por meio do PIX abaixo.
+          </p>
+        </div>
+
+        <div class="support-card" style="max-width: 620px; margin: 0 auto; text-align: center; background: var(--bg-surface); border: 1px solid var(--gold-border); border-radius: var(--radius-md); padding: 2rem 1.5rem; box-shadow: 0 10px 30px rgba(112, 87, 33, 0.08);">
+          
+          <!-- Texto de Destaque -->
+          <div style="background: var(--bg-parchment); border: 1px solid var(--gold-border); border-radius: var(--radius-sm); padding: 1rem 1.25rem; margin-bottom: 1.5rem;">
+            <p style="font-family: 'Cinzel', serif; font-size: 1.05rem; font-weight: 600; color: var(--gold-dark); margin: 0; line-height: 1.5;">
+              “Sua presença e suas orações são, antes de tudo, o nosso maior presente.”
+            </p>
+          </div>
+
+          <!-- Área do QR Code (Dinamizado via JS) -->
+          <div id="pixQrCodeContainer" style="margin-bottom: 1.5rem; display: flex; justify-content: center;">
+            <!-- Renderizado dinamicamente via renderPixSection() -->
+          </div>
+
+          <!-- Área da Chave PIX e Dados (Dinamizado via JS) -->
+          <div id="pixKeyContainer" style="margin-bottom: 1.5rem;">
+            <!-- Renderizado dinamicamente via renderPixSection() -->
+          </div>
+
+          <!-- Botão PayPal -->
+          <div style="margin-bottom: 2rem;">
+            <p style="font-family: 'Lora', Georgia, serif; font-size: 1.05rem; color: var(--text-main); margin-bottom: 1rem; text-align: center;">
+              Para pagamentos via <strong>Cartão de Crédito ou Débito</strong>, utilize o PayPal:
+            </p>
+            <div style="display: flex; justify-content: center;">
+              <button onclick="handlePayPalDonation()" style="background: none; border: none; cursor: pointer; padding: 0; transition: transform 0.2s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <img src="https://www.paypalobjects.com/pt_BR/BR/i/btn/btn_donateCC_LG.gif" alt="Faça doações com o botão do PayPal" title="PayPal - The safer, easier way to pay online!" />
+              </button>
+            </div>
+          </div>
+
+          <!-- Nota Obrigatória -->
+          <p style="font-size: 0.85rem; font-family: 'Lora', Georgia, serif; color: var(--text-muted); line-height: 1.55; margin-bottom: 1.25rem; font-style: italic; border-top: 1px solid var(--gold-soft); padding-top: 1rem;">
+            As contribuições são espontâneas e destinam-se ao auxílio dos preparativos da Ordenação Diaconal. Não há obrigatoriedade de contribuição.
+          </p>
+
+          <!-- Mensagem de Agradecimento -->
+          <p style="font-family: 'Cinzel', serif; font-size: 0.95rem; font-weight: 600; color: var(--gold-dark); margin: 0;">
+            Muito obrigado por sua generosidade e por suas orações.
+          </p>
+        </div>
+
+        <!-- Presentes Litúrgicos -->
+        <div class="support-card" style="max-width: 620px; margin: 2rem auto 0; text-align: center; background: var(--bg-surface); border: 1px solid var(--gold-border); border-radius: var(--radius-md); padding: 2rem 1.5rem; box-shadow: 0 10px 30px rgba(112, 87, 33, 0.08);">
+          <div style="display: flex; justify-content: center; margin-bottom: 1rem; color: var(--gold-dark);">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+              <line x1="7" y1="7" x2="7.01" y2="7"></line>
+            </svg>
+          </div>
+          <h3 style="font-family: 'Cinzel', serif; font-size: 1.3rem; font-weight: 700; color: var(--gold-dark); margin-bottom: 1rem;">Presentes Litúrgicos</h3>
+          <p style="font-family: 'Lora', Georgia, serif; font-size: 1.05rem; color: var(--text-main); line-height: 1.6; margin-bottom: 1.5rem;">
+            Para aqueles que desejam nos agraciar com presentes litúrgicos específicos, preparamos uma lista na <strong>Livraria São Francisco</strong>, em Assis.
+          </p>
+          <div style="background: var(--bg-parchment-light); border: 1px solid var(--gold-soft); border-radius: var(--radius-sm); padding: 1.25rem; margin-bottom: 1.5rem; text-align: left;">
+            <p style="font-family: 'Lora', Georgia, serif; font-size: 1.05rem; color: var(--text-main); line-height: 1.6; margin-bottom: 0.5rem; display: flex; align-items: flex-start; gap: 0.75rem;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; color: var(--gold-primary); margin-top: 0.1rem;">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <span><strong style="color: var(--gold-dark);">Endereço:</strong><br>R. José Nogueira Marmontel, 09 - Centro, Assis - SP, 19814-361</span>
+            </p>
+            <p style="font-family: 'Lora', Georgia, serif; font-size: 1.05rem; color: var(--text-main); line-height: 1.6; margin-bottom: 0; display: flex; align-items: flex-start; gap: 0.75rem;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; color: var(--gold-primary); margin-top: 0.1rem;">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+              </svg>
+              <span><strong style="color: var(--gold-dark);">WhatsApp:</strong><br>
+                <a href="https://wa.me/5518997451440" target="_blank" rel="noopener noreferrer" style="color: var(--gold-dark); text-decoration: underline; font-weight: 600;">+55 18 99745-1440</a>
+              </span>
+            </p>
+          </div>
+          
+          <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <a href="https://wa.me/5518997451440" target="_blank" rel="noopener noreferrer" class="btn-primary" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center; padding: 0.8rem 1.5rem; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+              </svg>
+              Falar no WhatsApp
+            </a>
+            <a href="https://maps.google.com/?q=R.+José+Nogueira+Marmontel,+09+-+Centro,+Assis+-+SP,+19814-361" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="display: inline-flex; align-items: center; justify-content: center; padding: 0.8rem 1.5rem; border-radius: 50px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem; color: var(--gold-primary);">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              Ver no Mapa
+            </a>
+          </div>
+        </div>
+        </div>
+        
+        
+        <!-- Lista de Presentes Renderizada (Site) -->
+        <div id="siteGiftListContainer" style="max-width: 800px; margin: 3rem auto 0; display: none;">
+          <h3 style="font-family: 'Cinzel', serif; font-size: 1.5rem; font-weight: 700; color: var(--gold-dark); text-align: center; margin-bottom: 1.5rem;">Lista de Presentes</h3>
+          <div id="siteGiftListDocContainer" style="text-align: center; margin-bottom: 2rem; display: none;"></div>
+          <div id="siteGiftListGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- ==========================================================================
+       9. RODAPÉ SOLENE
+       ========================================================================== -->
+  <footer class="site-footer">
+    <div class="container">
+      
+      <!-- ESPAÇO RESERVADO PARA O BRASÃO DA DIOCESE DE ASSIS NO RODAPÉ -->
+      <a href="https://www.instagram.com/diocesedeassis/" target="_blank" rel="noopener noreferrer" id="footerBrasaoContainer" style="display:inline-block; color:inherit; text-decoration:none;">
+        <div class="footer-coat-placeholder" title="Espaço reservado para o Brasão da Diocese de Assis">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/>
+            <path d="M12 6v10M8 10h8"/>
+          </svg>
+        </div>
+      </a>
+
+      <h2 class="footer-heading">Diocese de Assis</h2>
+      <p class="footer-subheading">Com gratidão a Deus e à Igreja.</p>
+
+      <p style="font-size: 0.9rem; color: #A89D91; max-width: 580px; margin: 0 auto 1.75rem; line-height: 1.6;">
+        Solene Concelebração Eucarística de Ordenação Diaconal de Alison Fernando Rodrigues dos Santos e João Henrique de Oliveira Guarsoni.
+      </p>
+
+      <!-- Áreas reservadas para links institucionais e redes sociais oficiais -->
+      <div class="footer-links-nav">
+        <a href="#hero" class="footer-link">Celebração</a>
+        <a href="#ordenandos" class="footer-link">Ordenandos</a>
+        <a href="#informacoes" class="footer-link">Informações</a>
+        <a href="#localizacao" class="footer-link">Localização</a>
+        <a href="#oracoes" class="footer-link">Orações</a>
+        <a href="#materiais" class="footer-link">Materiais</a>
+        <a href="#apoio" class="footer-link">Apoio Fraterno</a>
+        <button onclick="openAdminModal()" class="footer-link" style="background:none; border:none; color:var(--gold-light); cursor:pointer; font-size:0.85rem; text-decoration:underline; font-family:'Plus Jakarta Sans', sans-serif;">🔐 Área Administrativa</button>
+      </div>
+
+      <div class="footer-copyright">
+        <p>&copy; 2026 Diocese de Assis • SP. Todos os direitos reservados.</p>
+        <p style="font-size: 0.72rem; color: #5C544E; margin-top: 0.3rem;">
+          Criado por Alison Fernando Rodrigues dos Santos e João Henrique de Oliveira Guarsoni com ferramentas da Google Ai Studio.<br>
+          Página oficial de convite ecumênico e informativo da celebração diaconal.<br>
+          Versão 1.12 • Build: 12 de Agosto de 2026
+        </p>
+        <button class="btn-secondary" onclick="subscribeToNotifications()" style="display:inline-flex; align-items:center; justify-content:center; padding:0.5rem 1rem; border-radius:50px; margin-top:1rem; font-size: 0.85rem;">
+          🔔 Receber Notificações Push
+        </button>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- NOTIFICAÇÃO TOAST POPUP -->
+  <div class="toast-popup" id="toastPopup" role="status" aria-live="polite">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="8" x2="12" y2="12"></line>
+      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+    </svg>
+    <span id="toastMessage">Mensagem de aviso</span>
+  </div>
+
+  <!-- ==========================================================================
+       REPRODUTOR DE MÚSICA SACRA DE FUNDO (YOUTUBE)
+       ========================================================================== -->
+  <div class="music-player-widget-wrapper">
+    <!-- Card expansível do Vídeo YouTube -->
+    <div class="yt-embed-box" id="ytEmbedBox">
+      <div class="yt-embed-header">
+        <span>Música / Playlist</span>
+        <button class="btn-music-icon-only" onclick="toggleYtEmbedBox()" title="Fechar Vídeo">✕</button>
+      </div>
+      <div class="yt-embed-frame-container">
+        <iframe 
+          id="ytIframe" 
+          src="https://www.youtube-nocookie.com/embed/nTdhx9Zz04U?list=PLUK8yrBE-TeU&enablejsapi=1&playsinline=1&rel=0" 
+          title="Música / Playlist" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          allowfullscreen>
+        </iframe>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:var(--text-muted);">
+        <span>Caso o áudio seja bloqueado pelo navegador, clique no player acima.</span>
+        <a href="https://www.youtube.com/watch?v=nTdhx9Zz04U&list=PLUK8yrBE-TeU" target="_blank" rel="noopener noreferrer" style="color:var(--gold-dark); font-weight:600; text-decoration:underline;">Abrir no YouTube ↗</a>
+      </div>
+    </div>
+
+    <!-- Barra de Controle Flutuante -->
+    <div class="music-player-widget" id="sacredMusicWidget" role="region" aria-label="Reprodutor de Música Sacra">
+      <div class="music-album-art" title="Música Sacra">
+        <div class="music-equalizer" id="musicEq">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+
+      <div class="music-info-group">
+        <span class="music-title-text">Playlist da Ordenação</span>
+        <span class="music-subtitle-text">Música Sacra • Diocese de Assis</span>
+      </div>
+
+      <div class="music-controls-group">
+        <button class="btn-music-icon-only" onclick="prevSacredMusic()" title="Música Anterior">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="19 20 9 12 19 4 19 20"></polygon>
+            <line x1="5" y1="19" x2="5" y2="5"></line>
+          </svg>
+        </button>
+
+        <button class="btn-music-action" id="sacredPlayBtn" onclick="toggleYtEmbedBox()" title="Tocar / Pausar Música Sacra">
+          <svg id="playIcon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          <svg id="pauseIcon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display:none;">
+            <rect x="6" y="4" width="4" height="16"></rect>
+            <rect x="14" y="4" width="4" height="16"></rect>
+          </svg>
+        </button>
+
+        <button class="btn-music-icon-only" onclick="nextSacredMusic()" title="Próxima Música">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 4 15 12 5 20 5 4"></polygon>
+            <line x1="19" y1="5" x2="19" y2="19"></line>
+          </svg>
+        </button>
+
+        <button class="btn-music-icon-only" onclick="toggleYtEmbedBox()" title="Ver / Ocultar Vídeo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="4" width="20" height="16" rx="3" ry="3"></rect>
+            <polygon points="10 9 15 12 10 15 10 9" fill="currentColor"></polygon>
+          </svg>
+        </button>
+
+        <button class="btn-music-icon-only btn-minimize-toggle" onclick="toggleMinimizePlayer()" title="Minimizar / Expandir">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="4 14 10 14 10 20"></polyline>
+            <polyline points="20 10 14 10 14 4"></polyline>
+          </svg>
+        </button>
+
+        <button class="btn-music-icon-only" onclick="closePlayer()" title="Fechar Reprodutor" style="margin-left: 2px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERLAYS PARA LOGIN E AGRADECIMENTO -->
+  <div id="loginOverlay" class="login-overlay">
+    <div class="login-spinner"></div>
+    <p class="login-text">Conectando...</p>
+  </div>
+  
+  <div id="gratitudeOverlay" class="gratitude-overlay">
+    <div class="gratitude-icon">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+      </svg>
+    </div>
+    <h2 class="gratitude-text">Deus abençoe<br>sua generosidade!</h2>
+    <p class="gratitude-sub">Muito obrigado pelo seu apoio fraterno. Que Deus abençoe também a sua contribuição.</p>
+  </div>
+
+  <!-- MODAL DA ÁREA ADMINISTRATIVA E PAINEL DE CONTROLE DO ORDENANTE -->
+  <div class="admin-modal-backdrop" id="adminModalBackdrop" style="display:none;">
+    <div class="admin-modal-card">
+      
+      <!-- Cabeçalho do Modal -->
+      <div class="admin-modal-header">
+        <div class="admin-header-title-group">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <h2>Área Administrativa do Ordenante</h2>
+        </div>
+        <button class="admin-modal-close-btn" onclick="closeAdminModal()" aria-label="Fechar Painel">✕</button>
+      </div>
+
+      <!-- TELA DE LOGIN ADMIN -->
+      <div id="adminLoginScreen" style="padding: 2rem; text-align: center;">
+        <div style="max-width: 380px; margin: 0 auto; background: var(--bg-parchment-light); border: 1px solid var(--gold-border); border-radius: var(--radius-md); padding: 2rem 1.5rem; box-shadow: var(--shadow-subtle);">
+          <div style="width: 52px; height: 52px; background: var(--gold-soft); color: var(--gold-dark); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+          </div>
+          <h3 style="font-family: 'Cinzel', serif; font-size: 1.25rem; color: var(--gold-dark); margin-bottom: 0.5rem;">Acesso do Ordenante</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">Digite a senha secreta de acesso para editar todas as informações do site e moderar o mural de orações.</p>
+          
+          <form onsubmit="handleAdminLogin(event)">
+            <div style="margin-bottom: 1rem; text-align: left;">
+              <label for="adminPasswordInput" style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.3rem;">Senha de Acesso:</label>
+              <input type="password" id="adminPasswordInput" placeholder="Digite sua senha" required style="width: 100%; padding: 0.65rem 0.85rem; border: 1px solid var(--gold-border); border-radius: var(--radius-sm); font-size: 0.95rem; background: #FFF;" />
+            </div>
+            <button type="submit" class="btn-primary" style="width: 100%; padding: 0.75rem; font-size: 0.9rem; font-weight: 700;">
+              Entrar no Painel Admin
+            </button>
+          </form>
+          <p style="font-size: 0.72rem; color: var(--text-light); margin-top: 1rem; font-style: italic;">
+            Senha inicial configurada: <strong style="color:var(--gold-dark);">diacono2026</strong>
+          </p>
+        </div>
+      </div>
+
+      <!-- PAINEL PRINCIPAL ADMIN -->
+      <div id="adminDashboardScreen" style="display:none; padding: 1.25rem 1.5rem;">
+        
+        <!-- Barra de Navegação de Abas Admin -->
+        <div class="admin-tabs-nav">
+          <button class="admin-tab-btn active" id="tabBtnContent" onclick="switchAdminTab('content')">
+            📝 Editar Informações do Site
+          </button>
+          <button class="admin-tab-btn" id="tabBtnOrdenandos" onclick="switchAdminTab('ordenandos')">
+            👨‍💼 Ordenandos
+          </button>
+          <button class="admin-tab-btn" id="tabBtnModeration" onclick="switchAdminTab('moderation')">
+            🙏 Moderação de Orações (<span id="adminPendingBadge">0</span>)
+          </button>
+          <button class="admin-tab-btn" id="tabBtnSettings" onclick="switchAdminTab('settings')">
+            ⚙️ Senha & Status Firestore
+          </button>
+          <button class="admin-tab-btn" id="tabBtnPresentes" onclick="switchAdminTab('presentes')">
+            🎁 Lista de Presentes
+          </button>
+          <button class="admin-tab-btn" id="tabBtnPush" onclick="switchAdminTab('push')">
+            📢 Notificações Push
+          </button>
+        </div>
+
+        <!-- ABA 1: EDITAR CONTEÚDO E INFORMAÇÕES DO SITE -->
+        <div class="admin-tab-content active" id="tabContentSection">
+          <form id="adminSiteContentForm" onsubmit="handleSaveSiteContent(event)">
+            
+            <div class="admin-form-group-grid">
+              
+              <!-- Seção Fotos e Mídia -->
+              <div class="admin-form-card">
+                <h4>🖼️ Fotos & Logotipos Oficiais</h4>
+                
+                <div class="admin-field">
+                  <label for="inputFundoHero">URL / Imagem de Fundo (Vitral Hero):</label>
+                  <input type="text" id="inputFundoHero" placeholder="ex: img/vitral.png ou https://..." />
+                  <input type="file" id="fileFundoHero" accept="image/*" style="margin-top: 8px; font-size: 0.9rem;" />
+                  <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Imagem que ficará atrás da logo, animada e com transparência.</div>
+                </div>
+
+                <div class="admin-field">
+                  <label for="inputImagemLavaPes">URL / Imagem Jesus Lava os Pés:</label>
+                  <input type="text" id="inputImagemLavaPes" placeholder="ex: /jesus_lava_pes.png ou https://..." />
+                  <input type="file" id="fileImagemLavaPes" accept="image/*" style="margin-top: 8px; font-size: 0.9rem;" />
+                  <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Escolha uma imagem (será otimizada e salva no banco de dados)</div>
+                </div>
+
+                <div class="admin-field">
+                  <label for="inputLogoOrdenacao">URL / Logo da Ordenação:</label>
+                  <input type="text" id="inputLogoOrdenacao" placeholder="ex: img/logo_ordenacao.png ou https://..." />
+                  <input type="file" id="fileLogoOrdenacao" accept="image/*" style="margin-top: 8px; font-size: 0.9rem;" />
+                  <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Escolha uma imagem (será otimizada e salva no banco de dados)</div>
+                </div>
+
+                <div class="admin-field" style="display: none;">
+                  <label for="inputFotoAlison">URL / Foto Alison Fernando:</label>
+                  <input type="text" id="inputFotoAlison" placeholder="ex: img/alison.jpg ou https://..." />
+                  <input type="file" id="fileFotoAlison" accept="image/*" style="margin-top: 8px; font-size: 0.9rem;" />
+                  <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Escolha uma imagem (será otimizada e salva no banco de dados)</div>
+                </div>
+
+                <div class="admin-field" style="display: none;">
+                  <label for="inputFotoJoao">URL / Foto João Henrique:</label>
+                  <input type="text" id="inputFotoJoao" placeholder="ex: img/joao.jpg ou https://..." />
+                  <input type="file" id="fileFotoJoao" accept="image/*" style="margin-top: 8px; font-size: 0.9rem;" />
+                  <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Escolha uma imagem (será otimizada e salva no banco de dados)</div>
+                </div>
+
+                <div class="admin-field">
+                  <label for="inputBrasaoDiocese">URL / Brasão Diocese de Assis:</label>
+                  <input type="text" id="inputBrasaoDiocese" placeholder="ex: img/brasao.png ou https://..." />
+                  <input type="file" id="fileBrasaoDiocese" accept="image/*" style="margin-top: 8px; font-size: 0.9rem;" />
+                  <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Escolha uma imagem (será otimizada e salva no banco de dados)</div>
+                </div>
+
+                <div class="admin-field" style="display: none;">
+                  <label for="inputLogoParoquiaAlison">URL / Logo Paróquia Alison:</label>
+                  <input type="text" id="inputLogoParoquiaAlison" placeholder="ex: img/logo_paroquia_alison.png ou https://..." />
+                  <input type="file" id="fileLogoParoquiaAlison" accept="image/*" style="margin-top: 8px; font-size: 0.9rem;" />
+                  <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Escolha uma imagem (será otimizada e salva no banco de dados)</div>
+                </div>
+
+                <div class="admin-field" style="display: none;">
+                  <label for="inputTextoParoquiaAlison">Nome / Texto Paróquia Alison:</label>
+                  <input type="text" id="inputTextoParoquiaAlison" placeholder="ex: Paróquia N. Sra. da Boa Esperança" />
+                </div>
+
+                <div class="admin-field" style="display: none;">
+                  <label for="inputLogoParoquiaJoao">URL / Logo Paróquia João:</label>
+                  <input type="text" id="inputLogoParoquiaJoao" placeholder="ex: img/logo_paroquia_joao.png ou https://..." />
+                  <input type="file" id="fileLogoParoquiaJoao" accept="image/*" style="margin-top: 8px; font-size: 0.9rem;" />
+                  <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Escolha uma imagem (será otimizada e salva no banco de dados)</div>
+                </div>
+
+                <div class="admin-field" style="display: none;">
+                  <label for="inputTextoParoquiaJoao">Nome / Texto Paróquia João:</label>
+                  <input type="text" id="inputTextoParoquiaJoao" placeholder="ex: Paróquia Santo Antônio" />
+                </div>
+
+                <div class="admin-field">
+                  <label for="inputPixQrCode">URL Imagem QR Code PIX:</label>
+                  <input type="text" id="inputPixQrCode" placeholder="ex: img/qrcode-pix.png ou https://..." />
+                  <input type="file" id="filePixQrCode" accept="image/*" style="margin-top: 8px; font-size: 0.9rem;" />
+                  <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Escolha uma imagem (será otimizada e salva no banco de dados)</div>
+                </div>
+              </div>
+
+              <!-- Seção Informações Oficiais -->
+              <div class="admin-form-card">
+                <h4>🏛️ Informações da Celebração</h4>
+                
+                <div class="admin-field">
+                  <label for="inputBispoNome">Nome do Bispo Ordenante:</label>
+                  <input type="text" id="inputBispoNome" value="Dom Argemiro de Azevedo, CMF" required />
+                </div>
+
+                <div class="admin-field">
+                  <label for="inputBispoTitulo">Título Ecclesiástico do Bispo:</label>
+                  <input type="text" id="inputBispoTitulo" value="Bispo Diocesano de Assis" required />
+                </div>
+
+                <div class="admin-field">
+                  <label for="inputFotoBispo">URL / Foto do Bispo Ordenante:</label>
+                  <input type="text" id="inputFotoBispo" placeholder="ex: img/dom-argemiro.jpg ou https://..." />
+                  <input type="file" id="fileFotoBispo" accept="image/*" style="margin-top: 8px; font-size: 0.9rem;" />
+                  <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Escolha uma imagem (será otimizada e salva no banco de dados)</div>
+                </div>
+
+                <div class="admin-field">
+                  <label for="inputBrasaoBispo">URL / Brasão do Bispo:</label>
+                  <input type="text" id="inputBrasaoBispo" placeholder="ex: img/brasao-bispo.png ou https://..." />
+                  <input type="file" id="fileBrasaoBispo" accept="image/*" style="margin-top: 8px; font-size: 0.9rem;" />
+                  <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Escolha uma imagem (será otimizada e salva no banco de dados)</div>
+                </div>
+
+                <div class="admin-field">
+                  <label for="inputDataHorario">Data e Horário da Solenidade:</label>
+                  <input type="text" id="inputDataHorario" value="19 de Novembro de 2026, às 19h00" required />
+                </div>
+                <div class="admin-field">
+                  <label for="inputDataISO">Data e Hora para Contagem Regressiva (Calendário):</label>
+                  <input type="datetime-local" id="inputDataISO" value="2026-11-19T19:00" />
+                </div>
+
+                <div class="admin-field" style="display: flex; align-items: center; gap: 8px;">
+                  <input type="checkbox" id="inputEmBreve" style="width: auto; margin: 0;" />
+                  <label for="inputEmBreve" style="margin: 0; font-weight: normal; cursor: pointer;">Mostrar "Em breve mais informações" em vez de detalhes do local/data</label>
+                </div>
+
+                <div class="admin-field">
+                  <label for="inputLocalNome">Local da Celebração:</label>
+                  <input type="text" id="inputLocalNome" value="Paróquia Santa Cecília" required />
+                </div>
+
+                <div class="admin-field">
+                  <label for="inputLocalEndereco">Cidade / Endereço:</label>
+                  <input type="text" id="inputLocalEndereco" value="Assis – SP" required />
+                </div>
+
+                <div class="admin-field">
+                  <label for="inputMapsUrl">Link Google Maps (Rota):</label>
+                  <input type="url" id="inputMapsUrl" placeholder="https://maps.google.com/..." />
+                </div>
+              </div>
+
+              <!-- Seção Lemas & PIX -->
+              <div class="admin-form-card">
+                <h4>📖 Lemas Vocacionais & PIX</h4>
+                
+                <div class="admin-field">
+                  <label for="inputLemaGeral">Lema Geral da Ordenação:</label>
+                  <input type="text" id="inputLemaGeral" value="'Servi ao Senhor com alegria' (Sl 99,2)" />
+                </div>
+
+                <div class="admin-field" style="display: none;">
+                  <label for="inputLemaAlison">Lema Vocacional de Alison:</label>
+                  <input type="text" id="inputLemaAlison" value="'Graça e Paz' (1Pe 1,2)" />
+                </div>
+
+                <div class="admin-field" style="display: none;">
+                  <label for="inputLemaJoao">Lema Vocacional de João Henrique:</label>
+                  <input type="text" id="inputLemaJoao" value="'Eis-me aqui, envia-me' (Is 6,8)" />
+                </div>
+
+                <h4 style="font-family: 'Cinzel', serif; font-size: 1rem; color: var(--gold-dark); margin-top: 1.5rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--gold-soft); padding-bottom: 0.3rem;">Apoio PIX - Alison</h4>
+                <div class="admin-field">
+                  <label for="inputPixChaveAlison">Chave PIX (Alison):</label>
+                  <input type="text" id="inputPixChaveAlison" placeholder="ex: CPF, e-mail, telefone" />
+                </div>
+                <div class="admin-field">
+                  <label for="inputPixNomeAlison">Nome do Favorecido (Alison):</label>
+                  <input type="text" id="inputPixNomeAlison" placeholder="ex: Alison Fernando..." />
+                </div>
+
+                <h4 style="font-family: 'Cinzel', serif; font-size: 1rem; color: var(--gold-dark); margin-top: 1.5rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--gold-soft); padding-bottom: 0.3rem;">Apoio PIX - João Henrique</h4>
+                <div class="admin-field">
+                  <label for="inputPixChaveJoao">Chave PIX (João Henrique):</label>
+                  <input type="text" id="inputPixChaveJoao" placeholder="ex: CPF, e-mail, telefone" />
+                </div>
+                <div class="admin-field">
+                  <label for="inputPixNomeJoao">Nome do Favorecido (João Henrique):</label>
+                  <input type="text" id="inputPixNomeJoao" placeholder="ex: João Henrique..." />
+                </div>
+
+                <div class="admin-field" style="display: none;">
+                  <label for="inputPixChave">Chave PIX para Apoio:</label>
+                  <input type="text" id="inputPixChave" placeholder="ex: CPF, e-mail, telefone ou chave aleatória" />
+                </div>
+                <div class="admin-field" style="display: none;">
+                  <label for="inputPixNome">Nome do Favorecido PIX:</label>
+                  <input type="text" id="inputPixNome" placeholder="ex: Diocese de Assis / Ordenando" />
+                </div>
+                <div class="admin-field" style="display: none;">
+                  <label for="inputPixBanco">Banco / Instituição Financeira:</label>
+                  <input type="text" id="inputPixBanco" placeholder="ex: Banco do Brasil" />
+                </div>
+              </div>
+
+              <!-- Seção Materiais e Downloads -->
+              <div class="admin-form-card">
+                <h4>📥 Materiais e Downloads</h4>
+                <div class="admin-field">
+                  <label for="inputUrlLivreto">Link do Livreto da Missa (Ex: Google Drive, PDF):</label>
+                  <input type="url" id="inputUrlLivreto" placeholder="https://..." />
+                </div>
+                <div class="admin-field">
+                  <label for="inputUrlConvite">Link do Convite Oficial (Ex: Google Drive, Imagem):</label>
+                  <input type="url" id="inputUrlConvite" placeholder="https://..." />
+                </div>
+                <div class="admin-field">
+                  <label for="inputUrlWhatsapp">Link da Postagem p/ WhatsApp:</label>
+                  <input type="url" id="inputUrlWhatsapp" placeholder="https://..." />
+                </div>
+                <div class="admin-field">
+                  <label for="inputUrlInstagram">Link da Postagem p/ Instagram:</label>
+                  <input type="url" id="inputUrlInstagram" placeholder="https://..." />
+                </div>
+                                <div class="admin-field">
+                  <label for="inputUrlPlaylistOrdenacao">Link da Playlist Oficial (Spotify, YouTube, etc.):</label>
+                  <input type="text" id="inputUrlPlaylistOrdenacao" placeholder="ex: https://open.spotify.com/..." />
+                </div>
+                <div class="admin-field">
+                  <label for="inputUrlPlaylistYoutube">Link da Playlist de Música (YouTube, Suno, etc):</label>
+                  <input type="text" id="inputUrlPlaylistYoutube" placeholder="ex: nTdhx9Zz04U?list=PLUK8yrBE-TeU" />
+                  <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Insira apenas o ID do vídeo e a lista, ex: nTdhx9Zz04U?list=PLUK8yrBE-TeU</div>
+                </div>
+                <div class="admin-field">
+                  <label for="inputUrlFacebook">Link da Postagem p/ Facebook:</label>
+                  <input type="url" id="inputUrlFacebook" placeholder="https://..." />
+                </div>
+              </div>
+
+              
+              <!-- Seção Carta de Agradecimento -->
+              <div class="admin-form-card">
+                <h4>📜 Mensagem Pós-Evento (Agradecimento)</h4>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+                  Essa carta será exibida automaticamente no lugar do cronômetro após o dia da celebração.
+                </p>
+                <div class="admin-field">
+                  <label for="inputCartaAgradecimento">Texto da Carta:</label>
+                  <textarea id="inputCartaAgradecimento" rows="5" placeholder="Queridos irmãos e irmãs, com o coração repleto de alegria..."></textarea>
+                </div>
+              </div>
+
+              <!-- Seção Configurações de Exibição -->
+              <div class="admin-form-card">
+                <h4>👁️ Configurações de Exibição</h4>
+                
+                <div class="admin-field" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                  <input type="checkbox" id="inputShowOrdenandos" style="width: auto; margin: 0; cursor: pointer;" checked />
+                  <label for="inputShowOrdenandos" style="margin: 0; cursor: pointer; font-weight: 500;">Mostrar aba de Ordenandos</label>
+                </div>
+
+                <div class="admin-field" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                  <input type="checkbox" id="inputShowHistoria" style="width: auto; margin: 0; cursor: pointer;" checked />
+                  <label for="inputShowHistoria" style="margin: 0; cursor: pointer; font-weight: 500;">Mostrar botões "Conheça a História"</label>
+                </div>
+
+                <div class="admin-field" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                  <input type="checkbox" id="inputShowInformacoes" style="width: auto; margin: 0; cursor: pointer;" checked />
+                  <label for="inputShowInformacoes" style="margin: 0; cursor: pointer; font-weight: 500;">Mostrar aba de Informações</label>
+                </div>
+
+                <div class="admin-field" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                  <input type="checkbox" id="inputShowLocalizacao" style="width: auto; margin: 0; cursor: pointer;" checked />
+                  <label for="inputShowLocalizacao" style="margin: 0; cursor: pointer; font-weight: 500;">Mostrar aba de Localização</label>
+                </div>
+
+                <div class="admin-field" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                  <input type="checkbox" id="inputShowOracoes" style="width: auto; margin: 0; cursor: pointer;" checked />
+                  <label for="inputShowOracoes" style="margin: 0; cursor: pointer; font-weight: 500;">Mostrar aba de Orações</label>
+                </div>
+
+                <div class="admin-field" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                  <input type="checkbox" id="inputShowMateriais" style="width: auto; margin: 0; cursor: pointer;" checked />
+                  <label for="inputShowMateriais" style="margin: 0; cursor: pointer; font-weight: 500;">Mostrar aba de Materiais (Downloads)</label>
+                </div>
+
+                <div class="admin-field" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                  <input type="checkbox" id="inputShowApoio" style="width: auto; margin: 0; cursor: pointer;" checked />
+                  <label for="inputShowApoio" style="margin: 0; cursor: pointer; font-weight: 500;">Mostrar aba de Apoio Fraterno</label>
+                </div>
+
+                <div class="admin-field" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                  <input type="checkbox" id="inputShowPixQrCode" style="width: auto; margin: 0; cursor: pointer;" checked />
+                  <label for="inputShowPixQrCode" style="margin: 0; cursor: pointer; font-weight: 500;">Mostrar QR Code do PIX</label>
+                </div>
+              </div>
+
+            </div>
+
+            <div style="margin-top: 1.25rem; display: flex; gap: 1rem; justify-content: flex-end; align-items: center; border-top: 1px solid var(--gold-border); padding-top: 1rem;">
+              <button type="button" onclick="resetSiteContentDefaults()" class="btn-secondary" style="font-size: 0.85rem; padding: 0.6rem 1rem;">
+                ↺ Restaurar Padrões
+              </button>
+              <button type="submit" class="btn-primary" style="font-size: 0.9rem; padding: 0.65rem 1.5rem; font-weight: 700;">
+                💾 Salvar no Banco de Dados
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+        <!-- ABA ORDENANDOS -->
+        <div class="admin-tab-content" id="tabOrdenandosSection">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h4 style="font-family: 'Cinzel', serif; color: var(--gold-dark); margin: 0;">Lista de Ordenandos</h4>
+            <button onclick="addAdminOrdenando()" class="btn-primary" style="font-size: 0.8rem; padding: 0.4rem 0.85rem;">
+              + Adicionar Ordenando
+            </button>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Aqui você pode gerenciar a lista de ordenandos. Ao salvar, as mudanças serão aplicadas à seção Herói e à seção de Ordenandos.</p>
+          <div id="adminOrdenandosList" style="display: flex; flex-direction: column; gap: 1rem;"></div>
+          
+          <div style="margin-top: 1.5rem; text-align: right;">
+            <button onclick="handleSaveOrdenandos()" class="btn-primary" style="padding: 0.75rem 1.5rem;">
+              💾 Salvar Ordenandos
+            </button>
+          </div>
+        </div>
+
+        <!-- ABA 2: MODERAÇÃO DE ORAÇÕES E INTENÇÕES -->
+        <div class="admin-tab-content" id="tabModerationSection">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h4 style="font-family: 'Cinzel', serif; color: var(--gold-dark); margin: 0;">Mural de Orações (Banco de Dados Firestore)</h4>
+            <button onclick="promptAddDirectPrayer()" class="btn-primary" style="font-size: 0.8rem; padding: 0.4rem 0.85rem;">
+              + Criar Intenção Manual
+            </button>
+          </div>
+
+          <!-- Filtros de Status -->
+          <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+            <button type="button" onclick="filterAdminPrayers('all')" id="filterBtnAll" class="admin-filter-badge active">Todas (<span id="cntAll">0</span>)</button>
+            <button type="button" onclick="filterAdminPrayers('pending')" id="filterBtnPending" class="admin-filter-badge">Pendentes (<span id="cntPending">0</span>)</button>
+            <button type="button" onclick="filterAdminPrayers('approved')" id="filterBtnApproved" class="admin-filter-badge">Aprovadas (<span id="cntApproved">0</span>)</button>
+            <button type="button" onclick="filterAdminPrayers('rejected')" id="filterBtnRejected" class="admin-filter-badge">Rejeitadas (<span id="cntRejected">0</span>)</button>
+          </div>
+
+          <!-- Lista de Intenções -->
+          <div id="adminPrayersListContainer" style="display: flex; flex-direction: column; gap: 0.85rem; max-height: 480px; overflow-y: auto; padding-right: 0.25rem;">
+            <!-- Renderizado dinamicamente via JS -->
+          </div>
+        </div>
+
+        <!-- ABA 3: CONFIGURAÇÕES E STATUS -->
+        <!-- ABA 5: NOTIFICAÇÕES PUSH -->
+        
+        <!-- ABA: LISTA DE PRESENTES -->
+        <div class="admin-tab-content" id="tabPresentesSection">
+          <form id="adminPresentesForm" onsubmit="handleSavePresentes(event)">
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+              Gerencie a lista de presentes que ficará disponível no site.
+            </p>
+            
+            <div class="admin-field" style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--gold-border);">
+              <label for="inputUrlListaPresentesDoc">URL do Documento (Google Drive, PDF, etc):</label>
+              <input type="url" id="inputUrlListaPresentesDoc" placeholder="https://..." />
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Se preenchido, exibirá um botão para os convidados visualizarem/baixarem a lista completa de presentes em PDF ou Drive.</div>
+            </div>
+
+            <div id="adminPresentesList" style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem;"></div>
+            <button type="button" onclick="addAdminPresente()" class="btn-secondary" style="margin-bottom: 1rem;">+ Adicionar Presente</button>
+            <hr style="border: none; border-top: 1px solid var(--gold-border); margin: 1.5rem 0;" />
+            <div style="text-align: right;">
+              <button type="submit" class="btn-primary">Salvar Lista de Presentes</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="tabPushSection" class="admin-tab-content" style="display:none;">
+          <h3 style="color: var(--gold-dark); margin-bottom: 1rem; border-bottom: 1px solid var(--gold-border); padding-bottom: 0.5rem;">
+            Enviar Notificação Push
+          </h3>
+          <p style="font-size: 0.9rem; color: var(--text-main); margin-bottom: 1rem;">
+            Envie comunicados importantes (ex: mudança de horário, lembretes) para todas as pessoas que aceitaram receber notificações deste aplicativo.
+          </p>
+          <div class="admin-form-card">
+            <div class="admin-field">
+              <label>Título da Notificação:</label>
+              <input type="text" id="pushTitleInput" placeholder="Ex: Alteração de Horário!" />
+            </div>
+            <div class="admin-field">
+              <label>Mensagem:</label>
+              <textarea id="pushBodyInput" rows="3" placeholder="A missa será adiada em 30 minutos..."></textarea>
+            </div>
+            <div class="admin-field">
+              <label>URL de Redirecionamento (Opcional):</label>
+              <input type="text" id="pushUrlInput" placeholder="Ex: https://..." value="/" />
+            </div>
+            <button type="button" class="btn-primary" onclick="sendPushNotification()" style="margin-top: 1rem;">
+              🚀 Enviar Notificação
+            </button>
+          </div>
+        </div>
+
+        <div class="admin-tab-content" id="tabSettingsSection">
+          <div class="admin-form-card" style="max-width: 520px;">
+            <h4>🔒 Alterar Senha de Acesso Administrativo</h4>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Altere a senha mestre utilizada para abrir este painel de administração.</p>
+
+            <form onsubmit="handleChangeAdminPassword(event)">
+              <div class="admin-field">
+                <label for="newAdminPassInput">Nova Senha:</label>
+                <input type="password" id="newAdminPassInput" placeholder="Mínimo 6 caracteres" required />
+              </div>
+              <div class="admin-field">
+                <label for="confirmAdminPassInput">Confirmar Nova Senha:</label>
+                <input type="password" id="confirmAdminPassInput" placeholder="Repita a nova senha" required />
+              </div>
+              <button type="submit" class="btn-primary" style="padding: 0.6rem 1.2rem; font-size: 0.85rem; margin-top: 0.5rem;">
+                Atualizar Senha
+              </button>
+            </form>
+
+            <hr style="border: 0; border-top: 1px solid var(--gold-border); margin: 1.5rem 0;" />
+
+            <h4>🌐 Status do Conector Firebase Firestore</h4>
+            <div id="dbStatusBadge" style="display: inline-flex; align-items: center; gap: 0.5rem; background: #D1E7DD; color: #0F5132; padding: 0.45rem 0.95rem; border-radius: 20px; font-size: 0.82rem; font-weight: 600;">
+              <span style="width: 8px; height: 8px; background: #198754; border-radius: 50%; display: inline-block;"></span>
+              Conectado ao Firestore (Ativo e Sincronizado ao Vivo)
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Rodapé do Modal -->
+      <div class="admin-modal-footer">
+        <span style="font-size: 0.78rem; color: var(--text-muted);">Diocese de Assis • Painel do Ordenante</span>
+        <button class="btn-secondary" onclick="handleAdminLogout()" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;">
+          Fechar / Sair
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SCRIPT OFICIAL DO YOUTUBE IFRAME API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+
+  <!-- ==========================================================================
+       LÓGICA JAVASCRIPT EM CÓDIGO PURO (SEM DEPENDÊNCIAS EXTERNAS)
+       ========================================================================== -->
+  </body>
+</html>
