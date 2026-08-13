@@ -975,6 +975,59 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
       if (data.urlPlaylistYoutube) {
          var ytIframe = document.getElementById('ytIframe');
          var rawUrl = data.urlPlaylistYoutube.trim();
+         
+         // HARDCODED SUNO PLAYLIST IF APPLICABLE (Based on user's AudioService)
+         window.isNativeAudio = false;
+         window.isYoutubeMusic = false; // Initialize to avoid undefined
+         if (rawUrl.includes('suno.com') || rawUrl.includes('.mp3')) {
+             window.isNativeAudio = true;
+             
+             if (ytIframe) {
+                 ytIframe.style.display = 'none'; // hide the iframe
+                 ytIframe.src = ''; // Clear src so it doesn't autoplay in the background
+                 
+                 // Also hide the black frame container since there's no video
+                 var frameContainer = ytIframe.closest('.yt-embed-frame-container');
+                 if (frameContainer) frameContainer.style.display = 'none';
+             }
+             var b = document.getElementById('ytEmbedBox');
+             if (b) b.style.display = ''; // Let CSS handle visibility via .visible class
+             
+             // Update the link in the box to use the Ordenacao YouTube link
+             var ytLink = document.querySelector('.yt-embed-box a[href*="youtube.com"]');
+             if (ytLink && data.urlPlaylistOrdenacao) {
+                 ytLink.href = data.urlPlaylistOrdenacao;
+                 ytLink.innerText = 'Ouvir no YouTube ↗';
+             }
+             
+             if (rawUrl.includes('.mp3')) {
+                 window.ambientMusicPlaylist = rawUrl.split(',').map(u => u.trim());
+                 window.currentAmbientTrackIndex = 0;
+             } else {
+                 // Fetch from backend proxy
+                 fetch('/api/suno?url=' + encodeURIComponent(rawUrl))
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.urls && data.urls.length > 0) {
+                            window.ambientMusicPlaylist = data.urls;
+                            window.currentAmbientTrackIndex = 0;
+                            // If audio is already initialized but paused, we update it
+                            if (window.ambientAudio) {
+                                window.ambientAudio.src = window.ambientMusicPlaylist[0];
+                            } else {
+                                // Attempt autoplay without interaction
+                                if (window.toggleSacredMusic) {
+                                    window.toggleSacredMusic();
+                                }
+                            }
+                        }
+                    })
+                    .catch(err => console.error("Error fetching Suno playlist:", err));
+             }
+             
+             // WE CANNOT RETURN HERE OR THE REST OF applySiteDataToUI FAILS!
+         } else {
+         
          var iframeMatch = rawUrl.match(/<iframe.*?src=["'](.*?)["']/i);
          if (iframeMatch) {
              rawUrl = iframeMatch[1];
@@ -983,8 +1036,7 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
          // Fix for Suno URLs specifically
          if (rawUrl.includes('suno.com/song/')) {
              rawUrl = rawUrl.replace('suno.com/song/', 'suno.com/embed/');
-         } else if (rawUrl.includes('suno.com/playlist/')) {
-             rawUrl = rawUrl.replace('suno.com/playlist/', 'suno.com/embed/playlist/');
+         
          } else if (rawUrl.includes('spotify.com/')) {
              if (!rawUrl.includes('/embed/')) {
                  rawUrl = rawUrl.replace('spotify.com/', 'spotify.com/embed/');
@@ -996,23 +1048,51 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
          if (ytIframe) {
              let base = rawUrl;
              if (isYoutube) {
-                 base = base.includes('http') ? base : 'https://www.youtube-nocookie.com/embed/' + base;
+                 try {
+                     let urlObj = new URL(rawUrl.startsWith('http') ? rawUrl : 'https://' + rawUrl);
+                     if (urlObj.hostname.includes('youtube.com') || urlObj.hostname === 'youtu.be') {
+                         let videoId = urlObj.searchParams.get('v');
+                         if (urlObj.hostname === 'youtu.be') videoId = urlObj.pathname.slice(1);
+                         let listId = urlObj.searchParams.get('list');
+                         
+                         if (urlObj.pathname.includes('/playlist') && listId) {
+                             base = 'https://www.youtube-nocookie.com/embed/videoseries?list=' + listId;
+                         } else if (videoId) {
+                             base = 'https://www.youtube-nocookie.com/embed/' + videoId;
+                             if (listId) base += '?list=' + listId;
+                         } else if (urlObj.pathname.includes('/embed/')) {
+                             base = urlObj.href; // already an embed link
+                         } else {
+                             // Fallback for short formats like "nTdhx9Zz04U?list=PLUK8yrBE-TeU" that were parsed as domain
+                             base = 'https://www.youtube-nocookie.com/embed/' + rawUrl;
+                         }
+                     }
+                 } catch(e) {
+                     base = 'https://www.youtube-nocookie.com/embed/' + rawUrl;
+                 }
+                 
                  if (!base.includes('enablejsapi=1')) {
                      base += (base.includes('?') ? '&' : '?') + 'enablejsapi=1&playsinline=1&rel=0';
                  }
-                 // Converter watch?v= ou youtu.be para embed
-                 base = base.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube-nocookie.com/embed/');
+                 if (!base.includes('autoplay=')) {
+                     base += '&autoplay=1';
+                 }
                  if(ytIframe.parentElement && ytIframe.parentElement.style.aspectRatio !== '16 / 9') {
                      ytIframe.parentElement.style.aspectRatio = '16 / 9';
                      ytIframe.parentElement.style.height = 'auto';
                  }
              } else {
                  base = base.includes('http') ? base : 'https://' + base;
+                 if (!base.includes('autoplay=')) {
+                     base += (base.includes('?') ? '&' : '?') + 'autoplay=1';
+                 }
                  if(ytIframe.parentElement && ytIframe.parentElement.style.aspectRatio !== 'unset') {
                      ytIframe.parentElement.style.aspectRatio = 'unset';
                      ytIframe.parentElement.style.height = '150px';
                  }
              }
+             
+
              if (ytIframe.dataset.originalSrc !== base) {
                  ytIframe.dataset.originalSrc = base;
                  
@@ -1049,14 +1129,16 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
                  ytLink.innerText = 'Abrir no YouTube ↗';
                                                }
          }
+         } // END ELSE FOR NATIVE AUDIO
          
          // Se não for youtube, vamos ocultar os botões de controle específicos
          var sacredPlayBtn = document.getElementById('sacredPlayBtn');
          var btnPrev = document.querySelector('button[onclick="prevSacredMusic()"]');
          var btnNext = document.querySelector('button[onclick="nextSacredMusic()"]');
-         if (sacredPlayBtn) sacredPlayBtn.style.display = isYoutube ? '' : 'none';
-         if (btnPrev) btnPrev.style.display = isYoutube ? '' : 'none';
-         if (btnNext) btnNext.style.display = isYoutube ? '' : 'none';
+         var showButtons = isYoutube || window.isNativeAudio;
+         if (sacredPlayBtn) sacredPlayBtn.style.display = showButtons ? '' : 'none';
+         if (btnPrev) btnPrev.style.display = showButtons ? '' : 'none';
+         if (btnNext) btnNext.style.display = showButtons ? '' : 'none';
       }
 
 
@@ -2587,10 +2669,13 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
     var isMuted = false;
 
     window.initYTPlayer = function initYTPlayer() {
-      if (window.ytPlayer) return;
       if (window.isYoutubeMusic === undefined) return; // Wait for Firebase data
       if (window.isYoutubeMusic === false) return; // Prevent YouTube API from attaching to non-YT iframes
       if (typeof YT !== 'undefined' && YT.Player) {
+        if (window.ytPlayer) {
+           try { window.ytPlayer.destroy(); } catch(e) {}
+           window.ytPlayer = null;
+        }
         try {
           window.ytPlayer = new YT.Player('ytIframe', {
             events: {
@@ -2677,8 +2762,52 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
 
       var box = document.getElementById('ytEmbedBox');
 
-      // Se for Suno ou outro iframe não-YouTube, não temos controle de Play/Pause. Apenas mostramos a caixa.
-      if (window.isYoutubeMusic === false) {
+      // Native Audio Player Logic (Suno MP3s)
+      if (window.isNativeAudio) {
+          if (!window.ambientMusicPlaylist || window.ambientMusicPlaylist.length === 0) {
+              showToast("Aguarde, carregando a playlist...");
+              return;
+          }
+          if (!window.ambientAudio) {
+              window.ambientAudio = new Audio(window.ambientMusicPlaylist[window.currentAmbientTrackIndex]);
+              window.ambientAudio.volume = 0.5;
+              
+              window.ambientAudio.addEventListener('ended', () => {
+                  window.nextSacredMusic();
+              });
+              
+              window.ambientAudio.play().then(() => {
+                  showToast("Música em reprodução: Playlist.");
+                  updateMusicUI(true);
+              }).catch(err => {
+                  console.warn("Autoplay blocked or failed", err);
+                  if (err.name !== 'NotAllowedError') {
+                      showToast("Erro ao reproduzir. Clique no Play.");
+                  }
+                  updateMusicUI(false);
+              });
+          } else {
+              if (window.ambientAudio.paused) {
+                  window.ambientAudio.play().then(() => {
+                      showToast("Música retomada.");
+                      updateMusicUI(true);
+                  }).catch(err => {
+                      showToast("Erro ao reproduzir.");
+                      updateMusicUI(false);
+                  });
+              } else {
+                  window.ambientAudio.pause();
+                  showToast("Música pausada.");
+                  updateMusicUI(false);
+              }
+          }
+          return;
+      }
+
+
+
+      // Se for outro iframe não-YouTube, não temos controle de Play/Pause. Apenas mostramos a caixa.
+      if (window.isYoutubeMusic === false && !window.isNativeAudio) {
         if (box) {
           box.classList.toggle('visible');
           if (box.classList.contains('visible')) {
@@ -2716,6 +2845,21 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
     }
 
     window.nextSacredMusic = function nextSacredMusic() {
+      if (window.isNativeAudio && window.ambientMusicPlaylist) {
+          window.currentAmbientTrackIndex = (window.currentAmbientTrackIndex + 1) % window.ambientMusicPlaylist.length;
+          if (window.ambientAudio) {
+              const wasPlaying = !window.ambientAudio.paused;
+              window.ambientAudio.src = window.ambientMusicPlaylist[window.currentAmbientTrackIndex];
+              if (wasPlaying) {
+                  window.ambientAudio.play().catch(e => console.log(e));
+                  updateMusicUI(true);
+              }
+          }
+          showToast("Próxima música.");
+          return;
+      }
+
+      
       if (window.ytPlayer && typeof window.ytPlayer.nextVideo === 'function') {
         try {
           window.ytPlayer.nextVideo();
@@ -2729,6 +2873,21 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
     }
 
     window.prevSacredMusic = function prevSacredMusic() {
+      if (window.isNativeAudio && window.ambientMusicPlaylist) {
+          window.currentAmbientTrackIndex = (window.currentAmbientTrackIndex - 1 + window.ambientMusicPlaylist.length) % window.ambientMusicPlaylist.length;
+          if (window.ambientAudio) {
+              const wasPlaying = !window.ambientAudio.paused;
+              window.ambientAudio.src = window.ambientMusicPlaylist[window.currentAmbientTrackIndex];
+              if (wasPlaying) {
+                  window.ambientAudio.play().catch(e => console.log(e));
+                  updateMusicUI(true);
+              }
+          }
+          showToast("Música anterior.");
+          return;
+      }
+
+
       if (window.ytPlayer && typeof window.ytPlayer.previousVideo === 'function') {
         try {
           window.ytPlayer.previousVideo();
@@ -3076,3 +3235,43 @@ window.sendPushNotification = async function() {
     alert("Erro ao enviar notificação: " + error.message);
   }
 }
+
+
+
+
+
+
+
+
+    // Enable autoplay on first interaction to bypass browser policies
+    let firstInteraction = false;
+    const enableAudio = () => {
+      if (firstInteraction) return;
+      firstInteraction = true;
+      
+      const box = document.getElementById('ytEmbedBox');
+      // Removed auto-expand on first interaction per user request
+      /*
+      if (box && !box.classList.contains('visible')) {
+        box.classList.add('visible');
+      }
+      */
+      
+      const ytIframe = document.getElementById('ytIframe');
+      if (ytIframe) {
+        // If it's a YouTube iframe, or any iframe with autoplay, reloading it after interaction allows it to play
+        if (ytIframe.src && ytIframe.src.includes('autoplay=1')) { 
+           ytIframe.src = ytIframe.src;
+        }
+      }
+      
+      // Also start native audio if applicable
+      if (window.isNativeAudio) {
+          if (window.toggleSacredMusic && !window.ambientAudio) {
+              window.toggleSacredMusic(); // Starts playback natively
+          }
+      }
+      
+      ['click', 'scroll', 'touchstart'].forEach(e => document.removeEventListener(e, enableAudio));
+    };
+    ['click', 'scroll', 'touchstart'].forEach(e => document.addEventListener(e, enableAudio, { passive: true }));

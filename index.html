@@ -1142,7 +1142,7 @@
       <div class="yt-embed-frame-container">
         <iframe 
           id="ytIframe" 
-          src="https://www.youtube-nocookie.com/embed/nTdhx9Zz04U?list=PLUK8yrBE-TeU&enablejsapi=1&playsinline=1&rel=0" 
+          src="" 
           title="Música / Playlist" 
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
           allowfullscreen>
@@ -1177,7 +1177,7 @@
           </svg>
         </button>
 
-        <button class="btn-music-action" id="sacredPlayBtn" onclick="toggleYtEmbedBox()" title="Tocar / Pausar Música Sacra">
+        <button class="btn-music-action" id="sacredPlayBtn" onclick="toggleSacredMusic()" title="Tocar / Pausar Música Sacra">
           <svg id="playIcon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
             <polygon points="5 3 19 12 5 21 5 3"></polygon>
           </svg>
@@ -1522,7 +1522,7 @@
                 <div class="admin-field">
                   <label for="inputUrlPlaylistYoutube">Link da Playlist de Música (YouTube, Suno, etc):</label>
                   <input type="text" id="inputUrlPlaylistYoutube" placeholder="ex: nTdhx9Zz04U?list=PLUK8yrBE-TeU" />
-                  <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Insira apenas o ID do vídeo e a lista, ex: nTdhx9Zz04U?list=PLUK8yrBE-TeU</div>
+                  <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Insira qualquer link do YouTube (vídeo ou playlist) ou Suno</div>
                 </div>
                 <div class="admin-field">
                   <label for="inputUrlFacebook">Link da Postagem p/ Facebook:</label>
