@@ -281,8 +281,10 @@ setTimeout(window.removeSplashScreen, 3500);
           headerCoat.innerHTML = `
             <img src="${src}" 
                  alt="Brasão da Diocese de Assis" 
+                 class="hover-3d"
                  loading="eager" 
-                 style="height:42px; width:auto; max-width:48px; object-fit:contain; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.1));" />
+                 style="height:42px; width:auto; max-width:48px; object-fit:contain;"
+                 onclick="event.preventDefault(); openLightbox(this.src)" />
           `;
         }
 
@@ -405,10 +407,28 @@ setTimeout(window.removeSplashScreen, 3500);
       var navLinks = document.querySelectorAll('.nav-link');
 
       window.addEventListener('scroll', function() {
+        if (window.navMenu && window.navMenu.classList.contains('open')) {
+          window.navMenu.classList.remove('open');
+          var icon = document.querySelector('.diocese-dropdown-icon');
+          if(icon) icon.style.transform = 'rotate(0deg)';
+        }
         var currentSec = '';
         var scrollPosition = window.scrollY + 100;
 
-        sections.forEach(section => {
+        
+      var staggerObserver = new IntersectionObserver((entries) => {
+        var intersecting = entries.filter(e => e.isIntersecting);
+        intersecting.forEach((entry, i) => {
+          setTimeout(() => {
+            entry.target.classList.add('is-visible');
+          }, i * 150); // Stagger delay
+          staggerObserver.unobserve(entry.target);
+        });
+      }, { rootMargin: '0px 0px -50px 0px', threshold: 0.1 });
+      
+      document.querySelectorAll('.fade-in-stagger').forEach(el => staggerObserver.observe(el));
+
+      sections.forEach(section => {
           var top = section.offsetTop;
           var height = section.offsetHeight;
           if (scrollPosition >= top && scrollPosition < top + height) {
@@ -463,22 +483,66 @@ setTimeout(window.removeSplashScreen, 3500);
     }
 
     /* 6. COMPARTILHAR CONVITE (WEB SHARE API E FALLBACK) */
-    window.shareInvitation = function shareInvitation() {
+    
+    /* 6. COMPARTILHAR CONVITE (WEB SHARE API E FALLBACK) */
+    window.shareInvitation = async function shareInvitation() {
+      var data = window.currentSiteData || {};
       var titleText = "Ordenação Diaconal";
-      var messageText = "Você está convidado para a Ordenação Diaconal de Alison Fernando Rodrigues dos Santos e João Henrique de Oliveira Guarsoni, no dia 19 de novembro de 2026, às 19h, na Paróquia Santa Cecília, em Assis–SP. Rezemos pelas vocações!";
+      var messageText = data.shareMessage || "Você está convidado para a Ordenação Diaconal de Alison Fernando Rodrigues dos Santos e João Henrique de Oliveira Guarsoni, no dia 19 de novembro de 2026, às 19h, na Paróquia Santa Cecília, em Assis–SP. Rezemos pelas vocações!";
       var shareUrl = window.location.href;
-
       var fullMessage = messageText + "\n\n" + shareUrl;
-
-      if (navigator.share) {
-        navigator.share({
+      
+      // Por padrão, deixamos url e text separados.
+      var shareData = {
           title: titleText,
           text: messageText,
           url: shareUrl
-        }).then(() => {
-          // Compartilhado com sucesso via Web Share API
+      };
+
+      try {
+          if (data.shareImage && data.shareImage.trim() !== '') {
+              // Converte a imagem (que pode estar em WebP) para JPEG.
+              // O WhatsApp e outros apps aceitam JPEG muito melhor pelo Web Share API.
+              const blob = await new Promise((resolve, reject) => {
+                  const img = new Image();
+                  img.crossOrigin = "Anonymous";
+                  img.onload = () => {
+                      const canvas = document.createElement('canvas');
+                      canvas.width = img.width;
+                      canvas.height = img.height;
+                      // Preenche com fundo branco (caso a imagem tivesse transparência)
+                      const ctx = canvas.getContext('2d');
+                      ctx.fillStyle = '#FFFFFF';
+                      ctx.fillRect(0, 0, canvas.width, canvas.height);
+                      ctx.drawImage(img, 0, 0);
+                      
+                      canvas.toBlob((b) => {
+                          if (b) resolve(b);
+                          else reject(new Error("Canvas toBlob falhou"));
+                      }, 'image/jpeg', 0.95);
+                  };
+                  img.onerror = () => reject(new Error("Falha ao carregar imagem para compartilhamento"));
+                  img.src = data.shareImage;
+              });
+
+              const file = new File([blob], "convite.jpg", { type: "image/jpeg" });
+              if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                  shareData.files = [file];
+                  // Workaround crítico para WhatsApp (principalmente iOS):
+                  // Quando enviamos arquivos, o WhatsApp muitas vezes ignora o campo 'url'.
+                  // Então combinamos o texto e a URL no campo 'text' e removemos o campo 'url'.
+                  shareData.text = fullMessage;
+                  delete shareData.url;
+              }
+          }
+      } catch (e) {
+          console.warn("Não foi possível anexar a imagem ao compartilhamento:", e);
+      }
+
+      if (navigator.share) {
+        navigator.share(shareData).then(() => {
+          // Sucesso
         }).catch((err) => {
-          // Se o usuário não cancelou explicitamente, faz o fallback de cópia
           if (err && err.name !== 'AbortError') {
             copyShareTextToClipboard(fullMessage);
           }
@@ -487,6 +551,191 @@ setTimeout(window.removeSplashScreen, 3500);
         copyShareTextToClipboard(fullMessage);
       }
     }
+
+    
+    window.shareMedia = async function(dataUrl, title, filename) {
+      if (!dataUrl || dataUrl.trim() === '') return;
+
+      if (!dataUrl.startsWith('data:')) {
+         if (navigator.share) {
+             try { await navigator.share({ title: title, url: dataUrl }); }
+             catch(e) { window.open(dataUrl, '_blank'); }
+         } else { window.open(dataUrl, '_blank'); }
+         return;
+      }
+
+      try {
+         const response = await fetch(dataUrl);
+         const blob = await response.blob();
+         let mime = blob.type || 'image/jpeg';
+         let ext = mime === 'application/pdf' ? 'pdf' : (mime.includes('png') ? 'png' : 'jpg');
+         
+         if (mime.startsWith('image/')) {
+            const convertedBlob = await new Promise((resolve, reject) => {
+                const img = new Image();
+                img.crossOrigin = "Anonymous";
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0);
+                    canvas.toBlob((b) => {
+                        if (b) resolve(b);
+                        else reject(new Error("Canvas toBlob falhou"));
+                    }, 'image/jpeg', 0.95);
+                };
+                img.onerror = () => reject(new Error("Falha ao carregar"));
+                img.src = dataUrl;
+            });
+            
+            const file = new File([convertedBlob], `${filename}.jpg`, { type: 'image/jpeg' });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                 await navigator.share({ title: title, files: [file] });
+            } else {
+                 const a = document.createElement('a');
+                 a.href = URL.createObjectURL(convertedBlob);
+                 a.download = `${filename}.jpg`;
+                 a.click();
+            }
+         } else {
+            const file = new File([blob], `${filename}.${ext}`, { type: mime });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                 await navigator.share({ title: title, files: [file] });
+            } else {
+                 const a = document.createElement('a');
+                 a.href = URL.createObjectURL(blob);
+                 a.download = `${filename}.${ext}`;
+                 a.click();
+            }
+         }
+      } catch (e) {
+         console.warn("Share Media Error:", e);
+         const a = document.createElement('a');
+         a.href = dataUrl;
+         a.download = filename;
+         a.click();
+      }
+    };
+
+    
+    window.downloadMedia = async function(dataUrl, filename) {
+      if (!dataUrl || dataUrl.trim() === '') return;
+      if (!dataUrl.startsWith('data:')) {
+         const a = document.createElement('a');
+         a.href = dataUrl;
+         a.download = filename;
+         a.target = '_blank';
+         a.click();
+         return;
+      }
+      try {
+         const response = await fetch(dataUrl);
+         const blob = await response.blob();
+         let mime = blob.type || 'image/jpeg';
+         let ext = mime === 'application/pdf' ? 'pdf' : (mime.includes('png') ? 'png' : 'jpg');
+         const a = document.createElement('a');
+         a.href = URL.createObjectURL(blob);
+         a.download = `${filename}.${ext}`;
+         a.click();
+      } catch(e) {
+         window.open(dataUrl, '_blank');
+      }
+    };
+
+    window.sharePost = async function(dataUrl, titleText, filename, useInviteText = false) {
+      if (!dataUrl || dataUrl.trim() === '') return;
+      var data = window.currentSiteData || {};
+      var messageText = "";
+      var shareUrl = window.location.href;
+      
+      if (useInviteText) {
+          messageText = data.shareMessage || "Você está convidado para a Ordenação Diaconal de Alison Fernando Rodrigues dos Santos e João Henrique de Oliveira Guarsoni, no dia 19 de novembro de 2026, às 19h, na Paróquia Santa Cecília, em Assis–SP. Rezemos pelas vocações!";
+      }
+
+      var fullMessage = messageText ? (messageText + "\n\n" + shareUrl) : "";
+      
+      var shareData = {
+          title: titleText
+      };
+      
+      if (fullMessage) {
+          shareData.text = fullMessage;
+      }
+
+      if (!dataUrl.startsWith('data:')) {
+         if (navigator.share) {
+             shareData.url = dataUrl;
+             try { await navigator.share(shareData); }
+             catch(e) { 
+                 if (fullMessage) copyShareTextToClipboard(fullMessage);
+                 else window.open(dataUrl, '_blank'); 
+             }
+         } else { 
+             if (fullMessage) copyShareTextToClipboard(fullMessage);
+             else window.open(dataUrl, '_blank'); 
+         }
+         return;
+      }
+
+      try {
+         const response = await fetch(dataUrl);
+         const blob = await response.blob();
+         let mime = blob.type || 'image/jpeg';
+         let ext = mime === 'application/pdf' ? 'pdf' : (mime.includes('png') ? 'png' : 'jpg');
+         
+         if (mime.startsWith('image/')) {
+            const convertedBlob = await new Promise((resolve, reject) => {
+                const img = new Image();
+                img.crossOrigin = "Anonymous";
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0);
+                    canvas.toBlob((b) => {
+                        if (b) resolve(b);
+                        else reject(new Error("Canvas toBlob falhou"));
+                    }, 'image/jpeg', 0.95);
+                };
+                img.onerror = () => reject(new Error("Falha ao carregar"));
+                img.src = dataUrl;
+            });
+            
+            const file = new File([convertedBlob], `${filename}.jpg`, { type: 'image/jpeg' });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                 shareData.files = [file];
+                 // Prevent WhatsApp bug by keeping it all in text
+                 if (shareData.url) {
+                    shareData.text = (shareData.text ? shareData.text + "\n" : "") + shareData.url;
+                    delete shareData.url;
+                 }
+                 await navigator.share(shareData);
+            } else {
+                 if (fullMessage) copyShareTextToClipboard(fullMessage);
+                 else window.downloadMedia(dataUrl, filename);
+            }
+         } else {
+            const file = new File([blob], `${filename}.${ext}`, { type: mime });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                 shareData.files = [file];
+                 await navigator.share(shareData);
+            } else {
+                 if (fullMessage) copyShareTextToClipboard(fullMessage);
+                 else window.downloadMedia(dataUrl, filename);
+            }
+         }
+      } catch (e) {
+         console.warn("Share Error:", e);
+         if (fullMessage) copyShareTextToClipboard(fullMessage);
+         else window.downloadMedia(dataUrl, filename);
+      }
+    };
 
     window.copyShareTextToClipboard = function copyShareTextToClipboard(textToCopy) {
       if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -518,10 +767,84 @@ setTimeout(window.removeSplashScreen, 3500);
     }
 
     /* 7. GERAR E BAIXAR EVENTO DE CALENDÁRIO (.ICS VÁLIDO) */
+    function getDynamicCalendarData() {
+      var data = window.currentSiteData || {};
+      
+      var defaultTitle = "Ordenação Diaconal de Alison e João Henrique";
+      var title = defaultTitle;
+      if (data.ordenandos && data.ordenandos.length > 0) {
+        var names = data.ordenandos.map(o => {
+          let nameParts = (o.nome || '').trim().split(' ');
+          return nameParts[0] || '';
+        }).filter(n => n.length > 0);
+        if (names.length > 0) {
+          title = "Ordenação Diaconal de " + names.join(" e ");
+        }
+      }
+
+      var location = (data.localNome || "Paróquia Santa Cecília") + ", " + (data.localEndereco || "Assis-SP");
+      var desc = "Solene Celebração Eucarística de " + title;
+      
+      // Default UTC (BRT 19:00 -> UTC 22:00)
+      var dtStart = "20261119T220000Z";
+      var dtEnd = "20261120T003000Z";
+      
+      if (data.dataHorarioISO) {
+        // Ex: 2026-11-19T19:00
+        try {
+          var dateObj = new Date(data.dataHorarioISO + ":00-03:00"); // Force BRT timezone for input
+          if (!isNaN(dateObj.getTime())) {
+            var startUtc = new Date(dateObj.getTime());
+            var endUtc = new Date(dateObj.getTime() + (2.5 * 60 * 60 * 1000)); // 2.5 hours later
+            
+            var formatUTC = function(d) {
+              return d.getUTCFullYear() + 
+                     String(d.getUTCMonth()+1).padStart(2, '0') + 
+                     String(d.getUTCDate()).padStart(2, '0') + 'T' + 
+                     String(d.getUTCHours()).padStart(2, '0') + 
+                     String(d.getUTCMinutes()).padStart(2, '0') + 
+                     String(d.getUTCSeconds()).padStart(2, '0') + 'Z';
+            };
+            dtStart = formatUTC(startUtc);
+            dtEnd = formatUTC(endUtc);
+          }
+        } catch(e) {
+          console.error("Error parsing date", e);
+        }
+      }
+
+      return { title, location, desc, dtStart, dtEnd };
+    }
+
     window.downloadCalendarEvent = function downloadCalendarEvent() {
-      var eventTitle = "Ordenação Diaconal de Alison Fernando Rodrigues dos Santos e João Henrique de Oliveira Guarsoni";
-      var eventLocation = "Paróquia Santa Cecília, Assis–SP";
-      var eventDescription = "Solene Celebração Eucarística de Ordenação Diaconal.";
+      const modal = document.getElementById('calendarModal');
+      if (modal) modal.classList.add('open');
+    }
+
+    window.closeCalendarModal = function() {
+      const modal = document.getElementById('calendarModal');
+      if (modal) modal.classList.remove('open');
+    }
+
+    window.openGoogleCalendar = function() {
+      var calData = getDynamicCalendarData();
+      var url = "https://calendar.google.com/calendar/render?action=TEMPLATE" +
+                "&text=" + encodeURIComponent(calData.title) +
+                "&dates=" + calData.dtStart + "/" + calData.dtEnd +
+                "&details=" + encodeURIComponent(calData.desc) +
+                "&location=" + encodeURIComponent(calData.location);
+                
+      window.open(url, '_blank');
+      closeCalendarModal();
+    }
+
+    window.downloadICSFile = function() {
+      var calData = getDynamicCalendarData();
+      
+      // Removed spaces and simplified to avoid Android parsing issues
+      var safeTitle = calData.title.replace(/,/g, '');
+      var safeLocation = calData.location.replace(/,/g, ' ');
+      var safeDesc = calData.desc.replace(/,/g, ' ');
 
       var icsData = [
         "BEGIN:VCALENDAR",
@@ -529,21 +852,46 @@ setTimeout(window.removeSplashScreen, 3500);
         "PRODID:-//Diocese de Assis//Ordenacao Diaconal//PT",
         "CALSCALE:GREGORIAN",
         "METHOD:PUBLISH",
-        "BEGIN:VTIMEZONE",
-        "TZID:America/Sao_Paulo",
-        "X-LIC-LOCATION:America/Sao_Paulo",
-        "BEGIN:STANDARD",
-        "TZOFFSETFROM:-0300",
-        "TZOFFSETTO:-0300",
-        "TZNAME:-03",
-        "DTSTART:19700101T000000",
-        "END:STANDARD",
-        "END:VTIMEZONE",
         "BEGIN:VEVENT",
-        "UID:ordenacao-diaconal-20261119T190000@dioceseassis.org.br",
+        "UID:ordenacao-diaconal-" + calData.dtStart + "@dioceseassis.org.br",
+        "DTSTAMP:" + calData.dtStart,
+        "DTSTART:" + calData.dtStart,
+        "DTEND:" + calData.dtEnd,
+        "SUMMARY:" + safeTitle,
+        "LOCATION:" + safeLocation,
+        "DESCRIPTION:" + safeDesc,
+        "STATUS:CONFIRMED",
+        "END:VEVENT",
+        "END:VCALENDAR"
+      ].join("\r\n");
+
+      var blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8;' });
+      var link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.setAttribute('download', 'ordenacao.ics');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast("Evento baixado. Abra o arquivo para salvar em sua agenda!");
+      closeCalendarModal();
+    }
+
+    window.downloadICSFile = function() {
+      var eventTitle = "Ordenação Diaconal de Alison e João Henrique";
+      var eventLocation = "Paróquia Santa Cecília, Assis-SP";
+      var eventDescription = "Solene Celebração Eucarística de Ordenação Diaconal de Alison Fernando Rodrigues dos Santos e João Henrique de Oliveira Guarsoni.";
+
+      var icsData = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//Diocese de Assis//Ordenacao Diaconal//PT",
+        "CALSCALE:GREGORIAN",
+        "METHOD:PUBLISH",
+        "BEGIN:VEVENT",
+        "UID:ordenacao-diaconal-20261119T220000Z@dioceseassis.org.br",
         "DTSTAMP:20260722T120000Z",
-        "DTSTART;TZID=America/Sao_Paulo:20261119T190000",
-        "DTEND;TZID=America/Sao_Paulo:20261119T213000",
+        "DTSTART:20261119T220000Z",
+        "DTEND:20261120T003000Z",
         "SUMMARY:" + eventTitle,
         "LOCATION:" + eventLocation,
         "DESCRIPTION:" + eventDescription,
@@ -559,7 +907,8 @@ setTimeout(window.removeSplashScreen, 3500);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      showToast("Evento .ics gerado! Adicionando à sua agenda de compromissos...");
+      showToast("Evento .ics baixado com sucesso!");
+      closeCalendarModal();
     }
 
     /* ==========================================================================
@@ -582,6 +931,161 @@ setTimeout(window.removeSplashScreen, 3500);
 
     // Senha mestre de acesso admin (pode ser alterada e salva no localStorage/Firestore)
     var adminMasterPassword = localStorage.getItem('diaconal_admin_pass') || 'diacono2026';
+
+    
+    // Mobile Menu Diocese Brand Click
+    var dioceseBrand = document.querySelector('.diocese-brand');
+    var navMenu = document.getElementById('navMenu');
+    
+    if (dioceseBrand && navMenu) {
+      dioceseBrand.addEventListener('click', function(e) {
+        if (window.innerWidth <= 860) {
+          e.preventDefault();
+          navMenu.classList.toggle('open');
+          var icon = document.querySelector('.diocese-dropdown-icon');
+          if(icon) {
+            if(navMenu.classList.contains('open')) {
+              icon.style.transform = 'rotate(180deg)';
+            } else {
+              icon.style.transform = 'rotate(0deg)';
+            }
+          }
+        }
+      });
+      
+      // Close menu when clicking outside
+      document.addEventListener('click', function(e) {
+        if (window.innerWidth <= 860 && navMenu.classList.contains('open')) {
+          if (!dioceseBrand.contains(e.target) && !navMenu.contains(e.target)) {
+            navMenu.classList.remove('open');
+            var icon = document.querySelector('.diocese-dropdown-icon');
+            if(icon) icon.style.transform = 'rotate(0deg)';
+          }
+        }
+      });
+      
+      // Close menu when clicking a link
+      var navLinks = navMenu.querySelectorAll('a, button');
+      navLinks.forEach(function(link) {
+        link.addEventListener('click', function() {
+          if (window.innerWidth <= 860) {
+            navMenu.classList.remove('open');
+            var icon = document.querySelector('.diocese-dropdown-icon');
+            if(icon) icon.style.transform = 'rotate(0deg)';
+          }
+        });
+      });
+    }
+
+    
+    /* PWA INSTALLATION LOGIC */
+    
+    window.deferredPrompt = null;
+        window.deferredPrompt = null;
+    let deferredPrompt;
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      window.deferredPrompt = e;
+      const btnInstall = document.getElementById('btnInstallApp');
+      if (btnInstall) btnInstall.style.display = 'inline-flex';
+      
+      if (!localStorage.getItem('installPromptClosed')) {
+        const banner = document.getElementById('topInstallBanner');
+        if (banner) banner.style.display = 'flex';
+      }
+    });
+
+    
+    // Check if iOS
+    window.isIOS = () => {
+      return [
+        'iPad Simulator',
+        'iPhone Simulator',
+        'iPod Simulator',
+        'iPad',
+        'iPhone',
+        'iPod'
+      ].includes(navigator.platform)
+      || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+    };
+    
+    // Check if standalone (already installed)
+    window.isStandalone = () => {
+      return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    };
+    
+    window.addEventListener('DOMContentLoaded', () => {
+      if (!window.isStandalone() && window.isIOS()) {
+         const btnInstall = document.getElementById('btnInstallApp');
+         if (btnInstall) btnInstall.style.display = 'inline-flex';
+      }
+    });
+
+    window.openInstallModal = function() {
+      const modal = document.getElementById('pwaInstallModal');
+      const androidContainer = document.getElementById('pwaAndroidBtnContainer');
+      const androidInstructions = document.getElementById('pwaAndroidInstructions');
+      const iosContainer = document.getElementById('pwaIOSInstructions');
+      const pwaInstructions = document.getElementById('pwaInstructions');
+      
+      if (modal) {
+        modal.classList.add('open');
+        
+        if (window.isIOS()) {
+          if (iosContainer) iosContainer.style.display = 'block';
+          if (androidContainer) androidContainer.style.display = 'none';
+          if (androidInstructions) androidInstructions.style.display = 'none';
+          if (pwaInstructions) pwaInstructions.style.display = 'block';
+        } else {
+          if (iosContainer) iosContainer.style.display = 'none';
+          // If deferredPrompt is available, show button. Otherwise show manual instructions.
+          if (window.deferredPrompt) {
+            if (androidContainer) androidContainer.style.display = 'block';
+            if (androidInstructions) androidInstructions.style.display = 'none';
+            if (pwaInstructions) pwaInstructions.style.display = 'block';
+          } else {
+            if (androidContainer) androidContainer.style.display = 'none';
+            if (androidInstructions) androidInstructions.style.display = 'block';
+            if (pwaInstructions) pwaInstructions.style.display = 'none';
+          }
+        }
+      }
+    };
+    
+    window.closeInstallModal = function() {
+      const modal = document.getElementById('pwaInstallModal');
+      if (modal) {
+        modal.classList.remove('open');
+      }
+    };
+    
+    
+    window.installPWA = async function() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          console.log('User accepted the install prompt');
+          const btnInstall = document.getElementById('btnInstallApp');
+          if (btnInstall) btnInstall.style.display = 'none';
+        }
+        deferredPrompt = null;
+        window.deferredPrompt = null;
+        closeInstallModal();
+      } else {
+        // Fallback to manual openInstallModal which handles the instruction views now
+        closeInstallModal();
+        setTimeout(() => {
+          window.openInstallModal();
+        }, 300);
+      }
+      
+      const banner = document.getElementById('topInstallBanner');
+      if (banner) banner.style.display = 'none';
+    };
+
 
     /* ANIMAÇÃO DE SCROLL (FADE IN) */
     window.initScrollAnimations = function initScrollAnimations() {
@@ -871,6 +1375,7 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
     }
 
     window.renderDynamicOrdenandosToUI = function renderDynamicOrdenandosToUI(ordenandos) {
+      var data = window.currentSiteData || {};
       // 1. Atualizar a Hero Section (Nomes)
       var heroNamesWrapper = document.querySelector('.hero-names-wrapper');
       if (heroNamesWrapper) {
@@ -895,20 +1400,46 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
         grid.innerHTML = '';
         ordenandos.forEach(ord => {
           var card = document.createElement('article');
-          card.className = 'ordinand-profile-card';
+          card.className = 'ordinand-profile-card fade-in-stagger';
           
+          var urlParoquia = ord.paroquiaUrl || '';
+          if (!urlParoquia) {
+            if (ord.nome.includes('Alison')) urlParoquia = data.urlParoquiaAlison || '';
+            if (ord.nome.includes('Joao') || ord.nome.includes('João')) urlParoquia = data.urlParoquiaJoao || '';
+          }
+
           var fotoHtml = '';
           if(ord.foto) {
-             fotoHtml = `<img src="${ord.foto}" alt="${ord.nome}" loading="lazy" style="width:100%; height:100%; object-fit:cover; border-radius:inherit;" />`;
+             fotoHtml = `<img src="${ord.foto}" alt="${ord.nome}" loading="lazy" style="width:100%; height:100%; object-fit:cover;  cursor: pointer;" onclick="openLightbox(this.src)" />`;
           }
           
           var logoHtml = '';
           if(ord.paroquiaLogo) {
-             logoHtml = `<img src="${ord.paroquiaLogo}" alt="Logo" loading="lazy" style="height:60px; width:auto; max-width:none; object-fit:contain; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.1));" />`;
+             logoHtml = `<img src="${ord.paroquiaLogo}" alt="Logo" class="hover-3d" loading="lazy" style="height:60px; width:auto; max-width:none; object-fit:contain;" onclick="openLightbox(this.src)" />`;
+          }
+
+          var parishContent = `
+              <span style="display:inline-flex; align-items:center; color:inherit; text-decoration:none;">
+                ${logoHtml ? logoHtml : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-4a3 3 0 0 1 6 0v4"/></svg>`}
+              </span>
+              <span>Paróquia de origem: 
+                <strong style="color: inherit; text-decoration: none; border-bottom: 1px dotted var(--gold-border);">${ord.paroquiaNome}</strong>
+              </span>`;
+              
+          if (urlParoquia) {
+            parishContent = `
+              <a href="${urlParoquia}" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; color:inherit; text-decoration:none;">
+                ${logoHtml ? logoHtml : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-4a3 3 0 0 1 6 0v4"/></svg>`}
+              </a>
+              <span>Paróquia de origem: 
+                <a href="${urlParoquia}" target="_blank" rel="noopener noreferrer" style="color: var(--gold-dark); text-decoration: none; font-weight: 600; transition: color 0.3s ease; position: relative; z-index: 10; cursor: pointer;" onmouseover="this.style.color='var(--gold-primary)'" onmouseout="this.style.color='var(--gold-dark)'">
+                  <strong style="text-decoration: underline;">${ord.paroquiaNome}</strong>
+                </a>
+              </span>`;
           }
 
           card.innerHTML = `
-            <div class="ordinand-card-photo-frame" style="padding: 0; overflow: hidden; background: linear-gradient(135deg, var(--bg-parchment) 0%, #EAE2D2 100%);">
+            <div class="ordinand-card-photo-frame" style="padding: 0; background: linear-gradient(135deg, var(--bg-parchment) 0%, #EAE2D2 100%);">
               ${fotoHtml}
             </div>
             <h3 class="ordinand-card-name">${ord.nome}</h3>
@@ -927,12 +1458,7 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
               <p class="motto-quote">${ord.lema}</p>
             </div>
             <div class="parish-info">
-              <span style="display:inline-flex; align-items:center; color:inherit; text-decoration:none;">
-                ${logoHtml ? logoHtml : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-4a3 3 0 0 1 6 0v4"/></svg>`}
-              </span>
-              <span>Paróquia de origem: 
-                <strong style="color: inherit; text-decoration: none; border-bottom: 1px dotted var(--gold-border);">${ord.paroquiaNome}</strong>
-              </span>
+              ${parishContent}
             </div>
             <details class="history-details">
               <summary>
@@ -1164,7 +1690,7 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
       var defaultIcon = document.getElementById('presidenciaDefaultIcon');
 
       if (data.fotoBispo && data.fotoBispo.trim() !== '') {
-        var imgHtml = `<img src="${escapeHtml(data.fotoBispo.trim())}" alt="Foto do Bispo" loading="lazy" style="width:100%; height:100%; object-fit:cover;" />`;
+        var imgHtml = `<img src="${escapeHtml(data.fotoBispo.trim())}" alt="Foto do Bispo" loading="lazy" style="width:100%; height:100%; object-fit:cover;  cursor: pointer;" onclick="openLightbox(this.src)" />`;
         
         if (photoContainer) {
           photoContainer.style.display = 'flex';
@@ -1188,7 +1714,7 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
       if (data.brasaoBispo && data.brasaoBispo.trim() !== '') {
         if (coatContainer) {
           coatContainer.style.display = 'flex';
-          coatContainer.innerHTML = `<img src="${escapeHtml(data.brasaoBispo.trim())}" alt="Brasão do Bispo" loading="lazy" style="height:100%; width:auto; max-width:none; object-fit:contain;" />`;
+          coatContainer.innerHTML = `<img src="${escapeHtml(data.brasaoBispo.trim())}" class="hover-3d" alt="Brasão do Bispo" loading="lazy" style="height:100%; width:auto; max-width:none; object-fit:contain;" onclick="openLightbox(this.src)" />`;
         }
       } else {
         if (coatContainer) coatContainer.style.display = 'none';
@@ -1327,8 +1853,8 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
         var src = escapeHtml(data.brasaoDiocese.trim());
         var headerCoat = document.getElementById('headerBrasaoContainer');
         var footerCoat = document.getElementById('footerBrasaoContainer');
-        var imgHtml = `<img src="${src}" alt="Brasão da Diocese de Assis" loading="lazy" style="height:44px; width:auto; max-width:none; object-fit:contain; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.15));" />`;
-        var footerImgHtml = `<img src="${src}" alt="Brasão da Diocese de Assis" loading="lazy" style="height:60px; width:auto; max-width:none; object-fit:contain; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.15));" />`;
+        var imgHtml = `<img src="${src}" alt="Brasão da Diocese de Assis" class="hover-3d" loading="lazy" style="height:44px; width:auto; max-width:none; object-fit:contain;" onclick="event.preventDefault(); openLightbox(this.src)" />`;
+        var footerImgHtml = `<img src="${src}" alt="Brasão da Diocese de Assis" class="hover-3d" loading="lazy" style="height:60px; width:auto; max-width:none; object-fit:contain;" onclick="openLightbox(this.src)" />`;
         
         if (headerCoat) headerCoat.innerHTML = imgHtml;
         if (footerCoat) footerCoat.innerHTML = footerImgHtml;
@@ -1366,7 +1892,7 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
           `;
         }
         if (cardAlison && data.fotoAlison.trim() !== '') {
-          cardAlison.innerHTML = `<img src="${escapeHtml(data.fotoAlison)}" alt="Alison Fernando Rodrigues dos Santos" loading="lazy" style="width:100%; height:100%; object-fit:cover; border-radius:inherit;" />`;
+          cardAlison.innerHTML = `<img src="${escapeHtml(data.fotoAlison)}" alt="Alison Fernando Rodrigues dos Santos" loading="lazy" style="width:100%; height:100%; object-fit:cover; " />`;
         }
       }
 
@@ -1380,7 +1906,7 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
           `;
         }
         if (cardJoao && data.fotoJoao.trim() !== '') {
-          cardJoao.innerHTML = `<img src="${escapeHtml(data.fotoJoao)}" alt="João Henrique de Oliveira Guarsoni" loading="lazy" style="width:100%; height:100%; object-fit:cover; border-radius:inherit;" />`;
+          cardJoao.innerHTML = `<img src="${escapeHtml(data.fotoJoao)}" alt="João Henrique de Oliveira Guarsoni" loading="lazy" style="width:100%; height:100%; object-fit:cover; " />`;
         }
       }
 
@@ -1391,6 +1917,14 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
           logoAlison.innerHTML = `<img src="${escapeHtml(data.logoParoquiaAlison.trim())}" alt="Paróquia Alison" loading="lazy" style="height:60px; width:auto; max-width:none; object-fit:contain; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.1));" />`;
         }
       }
+      
+      if (data.urlParoquiaAlison && data.urlParoquiaAlison.trim() !== '') {
+        var logoContainerAlison = document.getElementById('parishLogoAlisonContainer');
+        var textLinkAlison = document.getElementById('parishTextLinkAlison');
+        if (logoContainerAlison) logoContainerAlison.href = data.urlParoquiaAlison.trim();
+        if (textLinkAlison) textLinkAlison.href = data.urlParoquiaAlison.trim();
+      }
+
       if (data.textoParoquiaAlison && data.textoParoquiaAlison.trim() !== '') {
         var pAlison = document.getElementById('parishTextAlison');
         if (pAlison) pAlison.innerText = data.textoParoquiaAlison;
@@ -1402,6 +1936,14 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
           logoJoao.innerHTML = `<img src="${escapeHtml(data.logoParoquiaJoao.trim())}" alt="Paróquia João" loading="lazy" style="height:60px; width:auto; max-width:none; object-fit:contain; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.1));" />`;
         }
       }
+      
+      if (data.urlParoquiaJoao && data.urlParoquiaJoao.trim() !== '') {
+        var logoContainerJoao = document.getElementById('parishLogoJoaoContainer');
+        var textLinkJoao = document.getElementById('parishTextLinkJoao');
+        if (logoContainerJoao) logoContainerJoao.href = data.urlParoquiaJoao.trim();
+        if (textLinkJoao) textLinkJoao.href = data.urlParoquiaJoao.trim();
+      }
+
       if (data.textoParoquiaJoao && data.textoParoquiaJoao.trim() !== '') {
         var pJoao = document.getElementById('parishTextJoao');
         if (pJoao) pJoao.innerText = data.textoParoquiaJoao;
@@ -1411,23 +1953,95 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
       renderPixSection(data);
 
       // 7. Materiais
+      
+      
+      
+      
+      var setupMaterialCard = (cardId, actionsId, statusId, imageValue, linkValue, title, filename, isWhatsapp) => {
+        var cardElem = document.getElementById(cardId);
+        var actionsElem = document.getElementById(actionsId);
+        var statusElem = document.getElementById(statusId);
+
+        if (cardElem && actionsElem && statusElem) {
+            // Clear existing buttons to rebuild them
+            actionsElem.innerHTML = '';
+            
+            var hasImage = imageValue && imageValue.trim() !== '';
+            var hasLink = linkValue && linkValue.trim() !== '';
+
+            if (hasImage || hasLink) {
+                actionsElem.style.display = 'flex';
+                statusElem.style.display = 'none';
+                cardElem.style.opacity = '1';
+                cardElem.style.pointerEvents = 'auto';
+
+                // Botão Acessar (se tiver link)
+                if (hasLink) {
+                    let btnAcessar = document.createElement('button');
+                    btnAcessar.innerText = 'Acessar';
+                    btnAcessar.style.cssText = 'background: none; border: 1px solid var(--gold-border); border-radius: 4px; padding: 0.2rem 0.5rem; font-size: 0.7rem; cursor: pointer; color: var(--text-main); font-family: inherit;';
+                    btnAcessar.onclick = (e) => { e.preventDefault(); window.open(linkValue, '_blank'); };
+                    actionsElem.appendChild(btnAcessar);
+                }
+
+                // Botão Baixar (se tiver imagem)
+                if (hasImage) {
+                    let btnBaixar = document.createElement('button');
+                    btnBaixar.innerText = 'Baixar';
+                    btnBaixar.style.cssText = 'background: none; border: 1px solid var(--gold-border); border-radius: 4px; padding: 0.2rem 0.5rem; font-size: 0.7rem; cursor: pointer; color: var(--text-main); font-family: inherit; margin-left: ' + (hasLink ? '4px' : '0') + ';';
+                    btnBaixar.onclick = (e) => { e.preventDefault(); window.downloadMedia(imageValue, filename); };
+                    actionsElem.appendChild(btnBaixar);
+                }
+
+                // Botão Compartilhar (sempre que tiver imagem ou link)
+                let btnCompartilhar = document.createElement('button');
+                btnCompartilhar.innerText = 'Compartilhar';
+                btnCompartilhar.style.cssText = 'background: var(--gold-soft); border: 1px solid var(--gold-border); border-radius: 4px; padding: 0.2rem 0.5rem; font-size: 0.7rem; cursor: pointer; color: var(--gold-dark); font-weight: bold; font-family: inherit; margin-left: 4px;';
+                btnCompartilhar.onclick = (e) => { 
+                    e.preventDefault(); 
+                    if (hasImage) {
+                        window.sharePost(imageValue, title, filename, isWhatsapp);
+                    } else {
+                        window.sharePost(linkValue, title, filename, isWhatsapp); 
+                    }
+                };
+                actionsElem.appendChild(btnCompartilhar);
+
+            } else {
+                actionsElem.style.display = 'none';
+                statusElem.style.display = 'block';
+                statusElem.innerText = 'Em breve';
+                statusElem.style.color = 'var(--text-muted)';
+                cardElem.style.opacity = '0.65';
+            }
+        }
+      };
+
+      setupMaterialCard('cardMaterialWhatsapp', 'actionsWhatsapp', 'statusWhatsapp', data.urlWhatsapp, data.linkPostWhatsapp, 'Postagem WhatsApp', 'postagem_whatsapp', true);
+      setupMaterialCard('cardMaterialInstagram', 'actionsInstagram', 'statusInstagram', data.urlInstagram, data.linkPostInstagram, 'Feed Oficial', 'postagem_feed', true);
+      setupMaterialCard('cardMaterialFacebook', 'actionsFacebook', 'statusFacebook', data.urlFacebook, data.linkPostFacebook, 'Stories Oficial', 'postagem_stories', true);
+
+
+
+
+      // Do the same for Livreto and Convite
       var linkLivreto = document.getElementById('linkMaterialLivreto');
       var statusLivreto = document.getElementById('statusLivreto');
       if (linkLivreto && statusLivreto) {
         if (data.urlLivreto && data.urlLivreto.trim() !== '') {
-          linkLivreto.href = data.urlLivreto;
-          linkLivreto.target = '_blank';
-          linkLivreto.rel = 'noopener noreferrer';
+          linkLivreto.href = '#';
+          linkLivreto.onclick = (e) => { e.preventDefault(); window.shareMedia(data.urlLivreto, 'Livreto da Missa', 'livreto_missa'); };
           linkLivreto.style.opacity = '1';
           linkLivreto.style.pointerEvents = 'auto';
-          statusLivreto.innerText = 'Disponível';
+          statusLivreto.innerText = 'Acessar / Baixar';
           statusLivreto.style.background = 'rgba(40, 167, 69, 0.15)';
           statusLivreto.style.color = '#1e7e34';
         } else {
           linkLivreto.removeAttribute('href');
+          linkLivreto.onclick = null;
           linkLivreto.style.opacity = '0.65';
           linkLivreto.style.pointerEvents = 'none';
-          statusLivreto.innerText = 'Indisponível no momento';
+          statusLivreto.innerText = 'Disponível em breve';
           statusLivreto.style.background = 'var(--gold-soft)';
           statusLivreto.style.color = 'var(--text-muted)';
         }
@@ -1437,49 +2051,24 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
       var statusConvite = document.getElementById('statusConvite');
       if (linkConvite && statusConvite) {
         if (data.urlConvite && data.urlConvite.trim() !== '') {
-          linkConvite.href = data.urlConvite;
-          linkConvite.target = '_blank';
-          linkConvite.rel = 'noopener noreferrer';
+          linkConvite.href = '#';
+          linkConvite.onclick = (e) => { e.preventDefault(); window.shareMedia(data.urlConvite, 'Convite Oficial', 'convite_oficial'); };
           linkConvite.style.opacity = '1';
           linkConvite.style.pointerEvents = 'auto';
-          statusConvite.innerText = 'Disponível';
+          statusConvite.innerText = 'Compartilhar / Baixar';
           statusConvite.style.background = 'rgba(40, 167, 69, 0.15)';
           statusConvite.style.color = '#1e7e34';
         } else {
           linkConvite.removeAttribute('href');
+          linkConvite.onclick = null;
           linkConvite.style.opacity = '0.65';
           linkConvite.style.pointerEvents = 'none';
-          statusConvite.innerText = 'Indisponível no momento';
+          statusConvite.innerText = 'Disponível em breve';
           statusConvite.style.background = 'var(--gold-soft)';
           statusConvite.style.color = 'var(--text-muted)';
         }
       }
 
-      var setupFormatLink = (elementId, statusId, urlValue) => {
-        var linkElem = document.getElementById(elementId);
-        var statusElem = document.getElementById(statusId);
-        if (linkElem && statusElem) {
-          if (urlValue && urlValue.trim() !== '') {
-            linkElem.href = urlValue;
-            linkElem.target = '_blank';
-            linkElem.rel = 'noopener noreferrer';
-            linkElem.style.pointerEvents = 'auto';
-            linkElem.style.opacity = '1';
-            statusElem.innerText = 'Disponível';
-            statusElem.style.color = '#1e7e34';
-          } else {
-            linkElem.removeAttribute('href');
-            linkElem.style.pointerEvents = 'none';
-            linkElem.style.opacity = '0.65';
-            statusElem.innerText = 'Em breve';
-            statusElem.style.color = 'var(--text-muted)';
-          }
-        }
-      };
-
-      setupFormatLink('linkMaterialWhatsapp', 'statusWhatsapp', data.urlWhatsapp);
-      setupFormatLink('linkMaterialInstagram', 'statusInstagram', data.urlInstagram);
-      setupFormatLink('linkMaterialFacebook', 'statusFacebook', data.urlFacebook);
 
       // --- CONFIGURAÇÕES DE EXIBIÇÃO ---
       var showHistoria = data.showHistoria !== false;
@@ -1547,11 +2136,30 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
       setVal('inputBispoTitulo', data.bispoTitulo || 'Bispo Diocesano de Assis');
       setVal('inputFotoBispo', data.fotoBispo || '');
       setVal('inputBrasaoBispo', data.brasaoBispo || '');
-      setVal('inputUrlLivreto', data.urlLivreto || '');
+      setVal('inputShareMessage', data.shareMessage || '');
+      setVal('inputShareImage', data.shareImage || '');
+      const previewShareImage = document.getElementById('previewShareImage');
+      if (previewShareImage && data.shareImage) { previewShareImage.src = data.shareImage; previewShareImage.style.display = 'block'; }
+            setVal('inputUrlLivreto', data.urlLivreto || '');
       setVal('inputUrlConvite', data.urlConvite || '');
       setVal('inputUrlWhatsapp', data.urlWhatsapp || '');
       setVal('inputUrlInstagram', data.urlInstagram || '');
       setVal('inputUrlFacebook', data.urlFacebook || '');
+      
+      const setupPreview = (inputId, previewId) => {
+         const val = document.getElementById(inputId)?.value;
+         const prev = document.getElementById(previewId);
+         if (prev && val && val.startsWith('data:image')) {
+            prev.src = val; prev.style.display = 'block';
+         }
+      };
+      setupPreview('inputUrlConvite', 'previewUrlConvite');
+      setupPreview('inputUrlWhatsapp', 'previewUrlWhatsapp');
+      setupPreview('inputUrlInstagram', 'previewUrlInstagram');
+      setupPreview('inputUrlFacebook', 'previewUrlFacebook');
+      setVal('linkPostWhatsapp', data.linkPostWhatsapp || '');
+      setVal('linkPostInstagram', data.linkPostInstagram || '');
+      setVal('linkPostFacebook', data.linkPostFacebook || '');
       setVal('inputCartaAgradecimento', data.cartaAgradecimento || 'Queridos irmãos e irmãs, com o coração repleto de alegria e gratidão, rendemos graças a Deus e a toda a comunidade por nos acompanharem neste momento tão especial de nossas vidas. Que o Senhor abençoe a todos!');
       setVal('inputUrlPlaylistYoutube', data.urlPlaylistYoutube || 'nTdhx9Zz04U?list=PLUK8yrBE-TeU');
       setVal('inputUrlPlaylistOrdenacao', data.urlPlaylistOrdenacao || '');
@@ -1692,6 +2300,13 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
     }
 
     var feedAutoScrollInterval;
+    var prayersCurrentPage = 1;
+    var prayersPerPage = 5;
+
+    window.changePrayersPage = function(delta) {
+      prayersCurrentPage += delta;
+      window.renderPublicPrayersFeed();
+    };
 
     window.renderPublicPrayersFeed = function renderPublicPrayersFeed() {
       var feedContainer = document.getElementById('prayersFeed');
@@ -1722,9 +2337,16 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
         return;
       }
       
+      var totalPages = Math.ceil(approvedList.length / prayersPerPage);
+      if (prayersCurrentPage > totalPages && totalPages > 0) prayersCurrentPage = totalPages;
+      if (prayersCurrentPage < 1) prayersCurrentPage = 1;
+      
+      var startIndex = (prayersCurrentPage - 1) * prayersPerPage;
+      var paginatedList = approvedList.slice(startIndex, startIndex + prayersPerPage);
+      
       var likedPrayers = JSON.parse(localStorage.getItem('liked_prayers') || '{}');
 
-      approvedList.forEach((prayer, index) => {
+      paginatedList.forEach((prayer, index) => {
         var card = document.createElement('div');
         card.className = 'prayer-card-item prayer-card-animated';
         card.style.animationDelay = `${index * 0.1}s`;
@@ -1763,17 +2385,21 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
         feedContainer.appendChild(card);
       });
 
-      // Efeito de rolagem leve automática
-      var scrollAmount = 0;
-      feedAutoScrollInterval = setInterval(() => {
-        if (!feedContainer.matches(':hover')) {
-          feedContainer.scrollTop += 1;
-          if (feedContainer.scrollTop >= (feedContainer.scrollHeight - feedContainer.clientHeight)) {
-            // Volta pro começo se chegou no fim
-            setTimeout(() => { feedContainer.scrollTop = 0; }, 2000);
-          }
-        }
-      }, 50); // Velocidade de scroll
+      // Renderizar controles de paginação
+      if (totalPages > 1) {
+        var paginationDiv = document.createElement('div');
+        paginationDiv.style.cssText = "display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--gold-soft);";
+        
+        var prevDisabled = prayersCurrentPage === 1 ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : '';
+        var nextDisabled = prayersCurrentPage === totalPages ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : '';
+        
+        paginationDiv.innerHTML = `
+          <button onclick="changePrayersPage(-1)" class="btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;" ${prevDisabled}>Anterior</button>
+          <span style="font-size: 0.85rem; color: var(--text-muted);">Página ${prayersCurrentPage} de ${totalPages}</span>
+          <button onclick="changePrayersPage(1)" class="btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;" ${nextDisabled}>Próxima</button>
+        `;
+        feedContainer.appendChild(paginationDiv);
+      }
     }
 
     window.renderPrayersFeedLocal = function renderPrayersFeedLocal() {
@@ -2002,8 +2628,8 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
         var img = new Image();
         img.onload = function() {
           var canvas = document.createElement('canvas');
-          var MAX_WIDTH = 800;
-          var MAX_HEIGHT = 800;
+          var MAX_WIDTH = 500;
+          var MAX_HEIGHT = 500;
           var width = img.width;
           var height = img.height;
           if (width > height) {
@@ -2014,7 +2640,7 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
           canvas.width = width; canvas.height = height;
           var ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
-          var dataUrl = canvas.toDataURL('image/webp', 0.8);
+          var dataUrl = canvas.toDataURL('image/webp', 0.6);
           if (window.adminOrdenandos[index]) {
              window.adminOrdenandos[index][field] = dataUrl;
              // also update the visible text input next to it
@@ -2031,25 +2657,26 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
       var file = event.target.files[0];
       if (!file) return;
 
-      var isJpeg = file.type === 'image/jpeg' || file.type === 'image/jpg';
       var reader = new FileReader();
       reader.onload = function(e) {
         var img = new Image();
         img.onload = function() {
           var canvas = document.createElement('canvas');
-          var MAX_WIDTH = 800;
-          var MAX_HEIGHT = 800;
+          
+          // Resolução padrão HD (1080p ideal para redes sociais e leveza)
+          var MAX_WIDTH = 1080;
+          var MAX_HEIGHT = 1080;
           var width = img.width;
           var height = img.height;
 
           if (width > height) {
             if (width > MAX_WIDTH) {
-              height *= MAX_WIDTH / width;
+              height = Math.round(height * MAX_WIDTH / width);
               width = MAX_WIDTH;
             }
           } else {
             if (height > MAX_HEIGHT) {
-              width *= MAX_HEIGHT / height;
+              width = Math.round(width * MAX_HEIGHT / height);
               height = MAX_HEIGHT;
             }
           }
@@ -2057,11 +2684,35 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
           canvas.width = width;
           canvas.height = height;
           var ctx = canvas.getContext('2d');
+          
+          // Fundo branco para imagens com transparência convertidas
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, width, height);
           ctx.drawImage(img, 0, 0, width, height);
 
-          // Use WebP for all images: smaller size, better quality, supports transparency
-          var dataUrl = canvas.toDataURL('image/webp', 0.8);
+          // Compressão inteligente e adaptativa
+          var quality = 0.85;
+          var dataUrl = canvas.toDataURL('image/webp', quality);
           
+          // Teto de ~100KB em Base64 (135.000 caracteres)
+          // Isso garante que o banco de dados suporte várias fotos na mesma página
+          var TARGET_SIZE = 135000; 
+
+          while (dataUrl.length > TARGET_SIZE && quality > 0.4) {
+             quality -= 0.1;
+             dataUrl = canvas.toDataURL('image/webp', quality);
+          }
+          
+          // Se mesmo na qualidade 0.4 continuar muito grande, reduzimos a dimensão (resize pela metade)
+          if (dataUrl.length > TARGET_SIZE) {
+             canvas.width = Math.round(width * 0.7);
+             canvas.height = Math.round(height * 0.7);
+             ctx.fillStyle = '#FFFFFF';
+             ctx.fillRect(0, 0, canvas.width, canvas.height);
+             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+             dataUrl = canvas.toDataURL('image/webp', 0.6);
+          }
+            
           // Set to text input
           var textInput = document.getElementById(inputId);
           if (textInput) {
@@ -2113,6 +2764,60 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
       var fileFotoBispo = document.getElementById('fileFotoBispo');
       if (fileFotoBispo) {
         fileFotoBispo.addEventListener('change', (e) => handleImageUpload(e, 'inputFotoBispo'));
+      }
+      
+      // Handlers for Materials
+      const setupMaterialUpload = (fileId, inputId, previewId) => {
+         const el = document.getElementById(fileId);
+         if (el) {
+            el.addEventListener('change', (e) => {
+               handleImageUpload(e, inputId);
+               setTimeout(() => {
+                 const prev = document.getElementById(previewId);
+                 const val = document.getElementById(inputId).value;
+                 if (prev && val) { prev.src = val; prev.style.display = 'block'; }
+               }, 1500);
+            });
+         }
+      };
+      setupMaterialUpload('fileUrlConvite', 'inputUrlConvite', 'previewUrlConvite');
+      setupMaterialUpload('fileUrlWhatsapp', 'inputUrlWhatsapp', 'previewUrlWhatsapp');
+      setupMaterialUpload('fileUrlInstagram', 'inputUrlInstagram', 'previewUrlInstagram');
+      setupMaterialUpload('fileUrlFacebook', 'inputUrlFacebook', 'previewUrlFacebook');
+
+      var fileUrlLivreto = document.getElementById('fileUrlLivreto');
+      if (fileUrlLivreto) {
+        fileUrlLivreto.addEventListener('change', (e) => {
+          var file = e.target.files[0];
+          if (!file) return;
+          if (file.size > 750 * 1024) {
+             alert('O arquivo PDF é muito grande (maior que 750 KB). O sistema não suporta arquivos tão grandes. Por favor, coloque o link do Google Drive no campo de texto.');
+             e.target.value = '';
+             document.getElementById('inputUrlLivreto').style.display = 'block';
+             return;
+          }
+          var reader = new FileReader();
+          reader.onload = function(evt) {
+            var textInput = document.getElementById('inputUrlLivreto');
+            if (textInput) {
+               textInput.value = evt.target.result;
+               alert('PDF carregado com sucesso!');
+            }
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      var fileShareImage = document.getElementById('fileShareImage');
+      if (fileShareImage) {
+        fileShareImage.addEventListener('change', (e) => {
+          handleImageUpload(e, 'inputShareImage');
+          setTimeout(() => {
+            const previewShareImage = document.getElementById('previewShareImage');
+            const url = document.getElementById('inputShareImage').value;
+            if(previewShareImage && url) { previewShareImage.src = url; previewShareImage.style.display = 'block'; }
+          }, 1500);
+        });
       }
       var fileBrasaoBispo = document.getElementById('fileBrasaoBispo');
       if (fileBrasaoBispo) {
@@ -2179,21 +2884,11 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
           showToast("Login com Google realizado com sucesso!");
         }).catch((error) => {
           console.error("Erro no login com Google:", error);
-          showToast("Erro ao fazer login com Google.");
-        });
-      } else {
-        showToast("Serviço de autenticação indisponível.");
-      }
-    }
-
-    window.loginWithFacebook = function loginWithFacebook() {
-      if (window.firebaseAuth && window.authMethods) {
-        var provider = new window.authMethods.FacebookAuthProvider();
-        window.authMethods.signInWithPopup(window.firebaseAuth, provider).then((result) => {
-          showToast("Login com Facebook realizado com sucesso!");
-        }).catch((error) => {
-          console.error("Erro no login com Facebook:", error);
-          showToast("Erro ao fazer login com Facebook.");
+          if (error.code === 'auth/auth-domain-config-required' || error.code === 'auth/operation-not-supported-in-this-environment') {
+             showToast("Login com popup bloqueado. Tente no navegador.");
+          } else {
+             showToast("Erro Google: " + (error.message || "Desconhecido"));
+          }
         });
       } else {
         showToast("Serviço de autenticação indisponível.");
@@ -2337,13 +3032,19 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
         brasaoDiocese: getVal('inputBrasaoDiocese'),
         logoParoquiaAlison: getVal('inputLogoParoquiaAlison'),
         textoParoquiaAlison: getVal('inputTextoParoquiaAlison'),
+        urlParoquiaAlison: getVal('inputUrlParoquiaAlison'),
+
         logoParoquiaJoao: getVal('inputLogoParoquiaJoao'),
         textoParoquiaJoao: getVal('inputTextoParoquiaJoao'),
+        urlParoquiaJoao: getVal('inputUrlParoquiaJoao'),
+
         pixQrCode: getVal('inputPixQrCode'),
         bispoNome: getVal('inputBispoNome') || 'Dom Argemiro de Azevedo, CMF',
         bispoTitulo: getVal('inputBispoTitulo') || 'Bispo Diocesano de Assis',
         fotoBispo: getVal('inputFotoBispo'),
         brasaoBispo: getVal('inputBrasaoBispo'),
+        shareMessage: getVal('inputShareMessage'),
+        shareImage: getVal('inputShareImage'),
         dataHorario: getVal('inputDataHorario'),
         dataHorarioISO: getVal('inputDataISO'),
         emBreve: document.getElementById('inputEmBreve') ? document.getElementById('inputEmBreve').checked : false,
@@ -2367,6 +3068,9 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
         urlWhatsapp: getVal('inputUrlWhatsapp'),
         urlInstagram: getVal('inputUrlInstagram'),
         urlFacebook: getVal('inputUrlFacebook'),
+        linkPostWhatsapp: getVal('linkPostWhatsapp'),
+        linkPostInstagram: getVal('linkPostInstagram'),
+        linkPostFacebook: getVal('linkPostFacebook'),
         cartaAgradecimento: getVal('inputCartaAgradecimento'),
         urlPlaylistYoutube: getVal('inputUrlPlaylistYoutube'),
         urlPlaylistOrdenacao: getVal('inputUrlPlaylistOrdenacao'),
@@ -2526,61 +3230,43 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
 
       if (!qrContainer || !keyContainer || !data) return;
 
-      var pixKey = data.pixChave ? data.pixChave.trim() : "";
-      var holder = data.pixNome ? data.pixNome.trim() : "";
-      var bank = data.pixBanco ? data.pixBanco.trim() : "";
-      var qrCodeImg = data.pixQrCode ? data.pixQrCode.trim() : "";
+      var pixAlison = data.pixChaveAlison ? data.pixChaveAlison.trim() : "";
+      var nomeAlison = data.pixNomeAlison ? data.pixNomeAlison.trim() : "Alison Fernando";
+      var fotoAlison = (data.ordenandos && data.ordenandos[0]) ? data.ordenandos[0].foto : data.fotoAlison;
+
+      var pixJoao = data.pixChaveJoao ? data.pixChaveJoao.trim() : "";
+      var nomeJoao = data.pixNomeJoao ? data.pixNomeJoao.trim() : "João Henrique";
+      var fotoJoao = (data.ordenandos && data.ordenandos[1]) ? data.ordenandos[1].foto : data.fotoJoao;
       
-      currentPixKey = pixKey; // para o copyPixKey
+      var qrCodeImg = data.pixQrCode ? data.pixQrCode.trim() : "";
 
-      // Renderiza o QR Code (ou Placeholder se a constante estiver vazia)
-      if (qrCodeImg !== "") {
-        qrContainer.innerHTML = `
-          <div style="background: #FFFFFF; border: 1px solid var(--gold-border); border-radius: var(--radius-sm); padding: 0.75rem; display: inline-block; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-            <img src="${escapeHtml(qrCodeImg)}" alt="QR Code PIX para apoio fraterno" style="width: 180px; height: 180px; object-fit: contain; display: block;" />
-            <span style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem; display: block; font-weight: 600;">Escaneie o QR Code no app do seu banco</span>
-          </div>
-        `;
-      } else {
-        qrContainer.innerHTML = `
-          <div class="qrcode-frame-box" title="QR Code PIX" style="width: 170px; height: 170px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--bg-parchment-light); border: 2px dashed var(--gold-border); border-radius: var(--radius-sm); padding: 1rem;">
-            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--gold-dark)" stroke-width="1.5">
-              <rect x="3" y="3" width="7" height="7"></rect>
-              <rect x="14" y="3" width="7" height="7"></rect>
-              <rect x="3" y="14" width="7" height="7"></rect>
-              <path d="M14 14h3v3h-3zM18 18h3v3h-3zM14 18h3v3h-3z"></path>
-            </svg>
-            <span style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.75rem; font-weight: 600; margin-top: 0.5rem; color: var(--gold-dark);">QR Code PIX</span>
-          </div>
-        `;
-      }
+      qrContainer.style.display = 'none'; // We'll put everything in keyContainer as a grid
 
-      // Renderiza a Chave PIX e dados bancários (ou mensagem de disponibilidade)
-      if (pixKey !== "") {
-        var detailsHtml = '';
-
-        if (holder || bank) {
-          detailsHtml = `
-            <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.6rem; display: flex; flex-direction: column; gap: 0.2rem;">
-              ${holder ? `<span><strong>Favorecido:</strong> ${escapeHtml(holder)}</span>` : ''}
-              ${bank ? `<span><strong>Instituição:</strong> ${escapeHtml(bank)}</span>` : ''}
-            </div>
-          `;
-        }
-
-        keyContainer.innerHTML = `
-          <p style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.5rem;">Chave PIX:</p>
-          <div class="pix-key-display" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.75rem; background: var(--bg-parchment); border: 1px solid var(--gold-border); border-radius: var(--radius-sm); padding: 0.75rem 1rem;">
-            <span id="pixKeyText" style="font-family: monospace, sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--gold-dark); word-break: break-all;">${escapeHtml(pixKey)}</span>
-            <button class="btn-primary" style="padding: 0.45rem 0.95rem; font-size: 0.82rem;" onclick="copyPixKey()">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      var generatePixCard = (name, pixKey, photoUrl, pixId) => {
+        if (!pixKey) return '';
+        var photoHtml = photoUrl ? `<img src="${escapeHtml(photoUrl)}" alt="${escapeHtml(name)}" class="hover-3d" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold-primary);" onclick="openLightbox(this.src)" />` : '';
+        return `
+          <div style="background: var(--bg-parchment); border: 1px solid var(--gold-border); border-radius: var(--radius-md); padding: 1.25rem; display: flex; flex-direction: column; align-items: center; gap: 0.75rem; flex: 1; min-width: 250px;">
+            ${photoHtml}
+            <h4 style="font-family: 'Cinzel', serif; color: var(--gold-dark); margin: 0; font-size: 1rem;">${escapeHtml(name)}</h4>
+            <span style="font-family: monospace, sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--text-main); word-break: break-all; background: var(--bg-parchment-light); padding: 0.4rem 0.8rem; border-radius: 4px; border: 1px dashed var(--gold-soft); width: 100%; text-align: center;">${escapeHtml(pixKey)}</span>
+            <button class="btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem; width: 100%;" onclick="fallbackCopyPixKey('${escapeHtml(pixKey)}')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:0.3rem; vertical-align:-3px;">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
               </svg>
-              Copiar chave PIX
+              Copiar PIX
             </button>
           </div>
-          ${detailsHtml}
+        `;
+      };
+
+      if (pixAlison !== "" || pixJoao !== "") {
+        keyContainer.innerHTML = `
+          <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;">
+            ${generatePixCard(nomeAlison, pixAlison, fotoAlison, 'alison')}
+            ${generatePixCard(nomeJoao, pixJoao, fotoJoao, 'joao')}
+          </div>
         `;
       } else {
         keyContainer.innerHTML = `
@@ -2717,6 +3403,16 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
     }
 
     window.onPlayerStateChange = function onPlayerStateChange(event) {
+      if (window.ytPlayer && typeof window.ytPlayer.getVideoData === 'function') {
+        try {
+          var videoData = window.ytPlayer.getVideoData();
+          if (videoData && videoData.title) {
+            var titleEls = document.querySelectorAll('.music-title-text');
+            titleEls.forEach(el => el.textContent = videoData.title);
+          }
+        } catch(e) {}
+      }
+      
       if (event.data === YT.PlayerState.PLAYING) {
         isMusicPlaying = true;
         try { localStorage.setItem('isMusicPlaying', 'true'); } catch(e) {}
@@ -2773,7 +3469,7 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
               window.ambientAudio.volume = 0.5;
               
               window.ambientAudio.addEventListener('ended', () => {
-                  window.nextSacredMusic();
+                  window.nextSacredMusic(true);
               });
               
               window.ambientAudio.play().then(() => {
@@ -2844,11 +3540,11 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
       }
     }
 
-    window.nextSacredMusic = function nextSacredMusic() {
+    window.nextSacredMusic = function nextSacredMusic(forcePlay = false) {
       if (window.isNativeAudio && window.ambientMusicPlaylist) {
           window.currentAmbientTrackIndex = (window.currentAmbientTrackIndex + 1) % window.ambientMusicPlaylist.length;
           if (window.ambientAudio) {
-              const wasPlaying = !window.ambientAudio.paused;
+              const wasPlaying = !window.ambientAudio.paused || forcePlay || window.ambientAudio.ended;
               window.ambientAudio.src = window.ambientMusicPlaylist[window.currentAmbientTrackIndex];
               if (wasPlaying) {
                   window.ambientAudio.play().catch(e => console.log(e));
@@ -3137,105 +3833,6 @@ window.urlBase64ToUint8Array = function(base64String) {
   return outputArray;
 }
 
-window.subscribeToNotifications = async function() {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-    alert("Notificações push não são suportadas neste navegador.");
-    return;
-  }
-  
-  try {
-    const permission = await Notification.requestPermission();
-    if (permission !== 'granted') {
-      alert("Você precisa permitir as notificações no seu navegador.");
-      return;
-    }
-    
-    const registration = await navigator.serviceWorker.ready;
-    
-    // Obter chave pública do servidor
-    const response = await fetch('/api/vapid-key');
-    const vapidData = await response.json();
-    const publicVapidKey = vapidData.publicKey;
-    
-    const subscription = await registration.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: window.urlBase64ToUint8Array(publicVapidKey)
-    });
-    
-    // Salvar inscrição no Firestore
-    if (window.firebaseDb && window.fsMethods) {
-      const { collection, addDoc, getDocs, query, where } = window.fsMethods;
-      
-      // Checar se já existe para evitar duplicatas (simplificado verificando o endpoint)
-      const subJSON = subscription.toJSON();
-      const q = query(collection(window.firebaseDb, 'pushSubscriptions'), where('endpoint', '==', subJSON.endpoint));
-      const querySnapshot = await getDocs(q);
-      
-      if (querySnapshot.empty) {
-        await addDoc(collection(window.firebaseDb, 'pushSubscriptions'), subJSON);
-      }
-    }
-    
-    alert("Inscrição concluída! Você receberá atualizações importantes.");
-  } catch (error) {
-    console.error("Erro ao inscrever notificações:", error);
-    alert("Erro ao tentar inscrever nas notificações.");
-  }
-}
-
-window.sendPushNotification = async function() {
-  if (!window.firebaseDb || !window.fsMethods) {
-    alert("Erro: Banco de dados não conectado.");
-    return;
-  }
-  
-  const title = document.getElementById('pushTitleInput').value.trim();
-  const body = document.getElementById('pushBodyInput').value.trim();
-  const url = document.getElementById('pushUrlInput').value.trim() || "/";
-  
-  if (!title || !body) {
-    alert("Preencha título e mensagem.");
-    return;
-  }
-  
-  try {
-    const { collection, getDocs } = window.fsMethods;
-    const querySnapshot = await getDocs(collection(window.firebaseDb, 'pushSubscriptions'));
-    
-    const subscriptions = [];
-    querySnapshot.forEach((doc) => {
-      subscriptions.push(doc.data());
-    });
-    
-    if (subscriptions.length === 0) {
-      alert("Ninguém está inscrito para receber notificações.");
-      return;
-    }
-    
-    const payload = { title, body, url };
-    
-    const response = await fetch('/api/send-notification', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ subscriptions, payload })
-    });
-    
-    const result = await response.json();
-    if (result.success) {
-      alert("Notificação enviada com sucesso!");
-      document.getElementById('pushTitleInput').value = '';
-      document.getElementById('pushBodyInput').value = '';
-    } else {
-      alert("Houve erros ao enviar a notificação.");
-    }
-  } catch (error) {
-    console.error("Erro ao enviar push:", error);
-    alert("Erro ao enviar notificação: " + error.message);
-  }
-}
-
 
 
 
@@ -3260,9 +3857,13 @@ window.sendPushNotification = async function() {
       const ytIframe = document.getElementById('ytIframe');
       if (ytIframe) {
         // If it's a YouTube iframe, or any iframe with autoplay, reloading it after interaction allows it to play
+        
         if (ytIframe.src && ytIframe.src.includes('autoplay=1')) { 
-           ytIframe.src = ytIframe.src;
+           // Only reload if we really have to, but YouTube API handles playVideo() better.
+           // Commented out to prevent the page from jumping or iframe stealing focus.
+           // ytIframe.src = ytIframe.src;
         }
+
       }
       
       // Also start native audio if applicable
@@ -3272,6 +3873,41 @@ window.sendPushNotification = async function() {
           }
       }
       
-      ['click', 'scroll', 'touchstart'].forEach(e => document.removeEventListener(e, enableAudio));
+      ['click', 'touchstart'].forEach(e => document.removeEventListener(e, enableAudio));
     };
-    ['click', 'scroll', 'touchstart'].forEach(e => document.addEventListener(e, enableAudio, { passive: true }));
+    ['click', 'touchstart'].forEach(e => document.addEventListener(e, enableAudio, { passive: true }));
+
+
+  
+
+  // === ONLINE / OFFLINE STATUS ===
+  function updateConnectionStatus() {
+    const dot = document.getElementById('connectionStatusDot');
+    const text = document.getElementById('connectionStatusText');
+    if (!dot || !text) return;
+    
+    if (navigator.onLine) {
+      dot.style.background = '#4caf50';
+      dot.style.boxShadow = '0 0 8px rgba(76, 175, 80, 0.4)';
+      text.textContent = 'Conectado • Sistema Atualizado';
+    } else {
+      dot.style.background = '#f44336';
+      dot.style.boxShadow = '0 0 8px rgba(244, 67, 54, 0.4)';
+      text.textContent = 'Modo Offline • Sem conexão';
+    }
+  }
+
+  window.addEventListener('online', updateConnectionStatus);
+  window.addEventListener('offline', updateConnectionStatus);
+  updateConnectionStatus();
+
+  // Detect iOS and show top banner fallback if not installed
+  setTimeout(() => {
+     if (window.isIOS && window.isIOS() && !window.navigator.standalone && !localStorage.getItem('installPromptClosed')) {
+        const banner = document.getElementById('topInstallBanner');
+        if (banner) banner.style.display = 'flex';
+        
+        const btn = document.getElementById('btnInstallApp');
+        if (btn) btn.style.display = 'inline-flex';
+     }
+  }, 2000);
