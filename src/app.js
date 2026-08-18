@@ -419,20 +419,7 @@ setTimeout(window.removeSplashScreen, 3500);
         var currentSec = '';
         var scrollPosition = window.scrollY + 100;
 
-        
-      var staggerObserver = new IntersectionObserver((entries) => {
-        var intersecting = entries.filter(e => e.isIntersecting);
-        intersecting.forEach((entry, i) => {
-          setTimeout(() => {
-            entry.target.classList.add('is-visible');
-          }, i * 150); // Stagger delay
-          staggerObserver.unobserve(entry.target);
-        });
-      }, { rootMargin: '0px 0px -50px 0px', threshold: 0.1 });
-      
-      document.querySelectorAll('.fade-in-stagger').forEach(el => staggerObserver.observe(el));
-
-      sections.forEach(section => {
+        sections.forEach(section => {
           var top = section.offsetTop;
           var height = section.offsetHeight;
           if (scrollPosition >= top && scrollPosition < top + height) {
@@ -1093,19 +1080,24 @@ setTimeout(window.removeSplashScreen, 3500);
 
     /* ANIMAÇÃO DE SCROLL (FADE IN) */
     window.initScrollAnimations = function initScrollAnimations() {
-      var sections = document.querySelectorAll('.fade-in-section');
+      var sections = document.querySelectorAll('.fade-in-section, .fade-in-stagger');
       
       var observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
+        var intersecting = entries.filter(e => e.isIntersecting);
+        intersecting.forEach((entry, index) => {
+          if (entry.target.classList.contains('fade-in-stagger')) {
+            setTimeout(() => {
+              entry.target.classList.add('is-visible');
+            }, index * 150);
+          } else {
             entry.target.classList.add('is-visible');
-            observer.unobserve(entry.target); // Stop observing once it's visible
           }
+          observer.unobserve(entry.target); // Stop observing once it's visible
         });
       }, {
         root: null,
-        rootMargin: '0px',
-        threshold: 0.15 // Triggers when 15% of the element is visible
+        rootMargin: '0px 0px -50px 0px',
+        threshold: 0 // Triggers as soon as any part of the element enters the viewport minus 50px
       });
 
       sections.forEach(section => {
@@ -1415,7 +1407,7 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
         grid.innerHTML = '';
         ordenandos.forEach(ord => {
           var card = document.createElement('article');
-          card.className = 'ordinand-profile-card fade-in-stagger';
+          card.className = 'ordinand-profile-card fade-in-stagger is-visible';
           
           var urlParoquia = ord.paroquiaUrl || '';
           if (!urlParoquia) {
@@ -2389,7 +2381,7 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
               <span class="prayer-author">${authorText}</span>
             </div>
             <button onclick="toggleLikePrayer('${prayer.id}')" style="background:none; border:none; cursor:pointer; display:flex; align-items:center; gap:0.3rem; color:${likeColor}; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="${likeFill}" stroke="currentColor" stroke-width="2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="${likeFill}" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px; min-width: 16px; min-height: 16px; flex-shrink: 0; display: block;">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
               </svg>
               <span style="font-size: 0.8rem; font-weight: 600;">${prayer.likes || 0}</span>
@@ -2748,18 +2740,30 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
             window.ambientAudio.play().then(() => {
                 audioStarted = true;
                 updateMusicUI(true);
+                removeAudioListeners();
             }).catch(e => console.log("Autoplay blocked:", e));
         } else if (!window.isNativeAudio && window.ytPlayer && typeof window.ytPlayer.playVideo === 'function') {
-            window.ytPlayer.playVideo();
-            audioStarted = true;
-            updateMusicUI(true);
+            try {
+                if (typeof window.ytPlayer.getPlayerState === 'function' && window.ytPlayer.getPlayerState() !== YT.PlayerState.PLAYING) {
+                    window.ytPlayer.playVideo();
+                }
+                audioStarted = true;
+                updateMusicUI(true);
+                removeAudioListeners();
+            } catch (err) {}
         }
     };
     
+    const removeAudioListeners = () => {
+        window.removeEventListener('scroll', startAudio);
+        window.removeEventListener('click', startAudio);
+        window.removeEventListener('touchstart', startAudio);
+    };
+
     // Listen for user interactions to unlock audio
-    ['scroll', 'click', 'touchstart'].forEach(evt => {
-        window.addEventListener(evt, startAudio, { once: true, passive: true });
-    });
+    window.addEventListener('scroll', startAudio, { passive: true });
+    window.addEventListener('click', startAudio, { passive: true });
+    window.addEventListener('touchstart', startAudio, { passive: true });
 
       var fileFundoHero = document.getElementById('fileFundoHero');
       if (fileFundoHero) {
@@ -3280,7 +3284,7 @@ window.initAdminOrdenandos = function initAdminOrdenandos() {
 
       var generatePixCard = (name, pixKey, photoUrl, qrCodeUrl) => {
         var photoHtml = photoUrl ? `<img src="${escapeHtml(photoUrl)}" alt="${escapeHtml(name)}" class="hover-3d" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold-primary);" onclick="openLightbox(this.src)" />` : '';
-        var qrCodeHtml = qrCodeUrl ? `<img src="${escapeHtml(qrCodeUrl)}" alt="QR Code PIX" style="width: 140px; height: 140px; border-radius: 8px; margin: 0.5rem auto; display: block; border: 1px solid var(--gold-border);" onclick="openLightbox(this.src)" />` : '';
+        var qrCodeHtml = qrCodeUrl ? `<img src="${escapeHtml(qrCodeUrl)}" alt="QR Code PIX" class="hover-3d" style="width: 140px; height: 140px; border-radius: 8px; margin: 0.5rem auto; display: block; border: 1px solid var(--gold-border);" onclick="openLightbox(this.src)" />` : '';
         var keyHtml = pixKey ? `<span style="font-family: monospace, sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--text-main); word-break: break-all; background: var(--bg-parchment-light); padding: 0.4rem 0.8rem; border-radius: 4px; border: 1px dashed var(--gold-soft); width: 100%; text-align: center;">${escapeHtml(pixKey)}</span>
             <button class="btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem; width: 100%; margin-top: 0.5rem;" onclick="fallbackCopyPixKey('${escapeHtml(pixKey)}')">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:0.3rem; vertical-align:-3px;">
@@ -3963,3 +3967,4 @@ window.urlBase64ToUint8Array = function(base64String) {
         if (btn) btn.style.display = 'inline-flex';
      }
   }, 2000);
+
